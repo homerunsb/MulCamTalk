@@ -17,7 +17,6 @@ public class JDBCUtil {
 	        Class.forName("com.mysql.jdbc.Driver");
 //	        return DriverManager.getConnection("jdbc:mysql://70.12.109.103:3306/multicampus", "admin", "1234");
 	        return DriverManager.getConnection("jdbc:mysql://172.30.1.51:3306/multicampus", "admin", "1234");
-//	        return DriverManager.getConnection("jdbc:mysql://172.30.1.51:3306/multicampus", "admin", "1234");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
