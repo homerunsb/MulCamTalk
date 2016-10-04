@@ -3,6 +3,9 @@ package com.mc.mctalk.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -26,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -36,6 +40,7 @@ import com.mc.mctalk.dao.UserDAO;
 import com.mc.mctalk.view.uiitem.CustomJScrollPane;
 import com.mc.mctalk.view.uiitem.SearchPanel;
 import com.mc.mctalk.vo.FriendsVO;
+import com.mc.mctalk.view.uiitem.RoundedImageMaker;
 
 public class FriendsListPanel extends JPanel {
 	String loginID = MainFrame.getLoginID();
@@ -63,7 +68,7 @@ public class FriendsListPanel extends JPanel {
 		UserDAO dao = new UserDAO();
 		mapFriends = new LinkedHashMap<String, FriendsVO>();
 		mapFriends = dao.getAllFriendsMap(loginID);
-		showFriendsList();
+		addElementToJList();
 		
 		// JList 모양 변경
 		jlFriendsList.setCellRenderer(new FriendsListCellRenderer());
@@ -71,14 +76,14 @@ public class FriendsListPanel extends JPanel {
 		jlFriendsList.addMouseListener(new FriendSelectionListener());
 		
 		scrollPane = new CustomJScrollPane(jlFriendsList);
-		scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.lightGray));
+		scrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, new Color(230, 230, 230)));
 
 		this.add(pSearch, "North");
 		this.add(scrollPane, "Center");
 	}
 	
 	//JList를 기존에 가져온 LinkedHashMap(순서보장) 데이터로 초기화
-	public void showFriendsList(){
+	public void addElementToJList(){
 		Set<Map.Entry<String, FriendsVO>> entrySet = mapFriends.entrySet();
 		Iterator<Map.Entry<String, FriendsVO>> entryIterator = entrySet.iterator();
 		while (entryIterator.hasNext()) {
@@ -129,7 +134,7 @@ public class FriendsListPanel extends JPanel {
 		//입력된 값이 없을 경우 전체 리스트 항목 삭제 후 다시 로딩
 		if(inputSearchText.length()==0){
 			listModel.removeAllElements();
-			showFriendsList();
+			addElementToJList();
 		}else{
 		//있을 경우 전체 삭제 후 입력된 값을 받아 객채 안에 해당 값을 가진 엘리먼트를 추가. 없다면 삭제.
 		//DB를 다시 붙는 개념이 아니고, 최초 1번만 붙어서 받아온 데이터를 담고 있는 map에 대한 컨트롤임.
@@ -147,69 +152,65 @@ public class FriendsListPanel extends JPanel {
 	}
 	
 	//JList 모양 변경
-	class FriendsListCellRenderer extends DefaultListCellRenderer{
-		public FriendsListCellRenderer(){
-			this.setOpaque(true);
-			this.setIconTextGap(20); 			//아이콘과 텍스트의 간격 설정
+	class FriendsListCellRenderer extends JPanel implements ListCellRenderer<FriendsVO> {
+		private JLabel lbImgIcon = new JLabel();
+		private JLabel lbName = new JLabel();
+		private JLabel lbStatMsg = new JLabel();
+		private JPanel panelText;
+		
+		public FriendsListCellRenderer() {
+			Border border = this.getBorder();
+			Border margin = new EmptyBorder(5, 15, 5, 10);
+			this.setLayout(new BorderLayout(10, 10)); //간격 조정이 되버림(확인필요)
+			this.setBorder(new CompoundBorder(border, margin));
+			
+			lbName.setFont(new Font("Malgun Gothic", Font.BOLD, 13));
+			lbStatMsg.setFont(new Font("Malgun Gothic", Font.PLAIN, 10));
+			lbStatMsg.setBorder(new EmptyBorder(0, 10, 0, 10));
+			
+			panelText = new JPanel(new GridLayout(0, 1));
+			panelText.setBorder(new EmptyBorder(15, 10, 15, 0));
+			panelText.add(lbName);
+			panelText.add(lbStatMsg);
+
+			add(lbImgIcon, BorderLayout.WEST);
+			add(panelText, BorderLayout.CENTER);
 		}
 		
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-				boolean cellHasFocus) {
-			
-			JLabel comp = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			Border border = comp.getBorder();
-			Border margin = new EmptyBorder(0,10,0,10);
-			comp.setBorder(new CompoundBorder(border, margin));
+		public Component getListCellRendererComponent(JList<? extends FriendsVO> list, FriendsVO value, int index,
+				boolean isSelected, boolean cellHasFocus) {
 			//받아온 JList의 값을 FriendsVO 객체에 담기
 			FriendsVO vo = (FriendsVO) value;
-			
 			//리턴할 객체에 이미지, 이름과, 상태 메세지 세팅
-			comp.setIcon(vo.getProfileImage());
-			comp.setText(vo.getUserName() 
-					+ (vo.getUserMsg() == null ? "" : "  /  " + vo.getUserMsg()) );
-			return comp;
-		}
-	}
-	
-	//테스트 용(키조합 입력(Ctrl+enter) 리스너)
-	//상균이 소스 문제 없을시 삭제 필요
-	class TestKeyListener implements KeyListener {
-		int inputKey = 0;
-		int inputKey2 = 0;
-		int count = 0;
-		@Override
-		public void keyPressed(KeyEvent e) {
-			System.out.println("keyPressed : " + e.getKeyCode());
-			if(e.getKeyCode() == KeyEvent.VK_CONTROL){
-				inputKey = e.getKeyCode();
+			lbImgIcon.setIcon(vo.getProfileImage());
+			lbName.setText(vo.getUserName());
+			if(vo.getUserMsg() != null ){
+				lbStatMsg.setText(vo.getUserMsg());
 			}
-			if(e.getKeyCode() == KeyEvent.VK_ENTER){
-				inputKey2 = e.getKeyCode();
-			}
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-			KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, e.CTRL_MASK);
-			System.out.println(ks.getKeyCode());
 			
-			if(e.getKeyCode()==KeyEvent.VK_ENTER ){
-				if(inputKey == KeyEvent.VK_CONTROL && inputKey2 == KeyEvent.VK_ENTER){
-					System.out.println("콘트롤 + 엔터  : " + inputKey + ", " + inputKey2);
-				}else{
-					inputKey = 0;
-					inputKey2 = 0;
-				}
-			}else{
-				inputKey = 0;
-				inputKey2 = 0;
-			}
-			System.out.println("keyReleased : " + e.getKeyCode());			
-		}
-		@Override
-		public void keyTyped(KeyEvent e) {
-//			System.out.println("keyTyped : " + e.getKeyCode());
+			//투명도 설정
+			lbImgIcon.setOpaque(true);
+		    lbName.setOpaque(true);
+		    lbStatMsg.setOpaque(true);
+			panelText.setOpaque(true);
+			
+		    // 선택됐을때 색상 변경
+		    if (isSelected) {
+		    	lbImgIcon.setBackground(list.getSelectionBackground());
+		        lbName.setBackground(list.getSelectionBackground());
+		        lbStatMsg.setBackground(list.getSelectionBackground());
+		        panelText.setBackground(list.getSelectionBackground());
+		        setBackground(list.getSelectionBackground());
+		    } else { 
+		    	lbImgIcon.setBackground(list.getBackground());
+		    	lbName.setBackground(list.getBackground());
+		    	lbStatMsg.setBackground(list.getBackground());
+		        panelText.setBackground(list.getBackground());
+		        setBackground(list.getBackground());
+		    }
+			
+			return this;
 		}
 	}
 }

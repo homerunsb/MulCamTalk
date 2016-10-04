@@ -102,6 +102,40 @@ public class ChattingRoomDAO {
 		return roomID;
 	}
 	
+	//인원수와 상관없이 방을 만들자.
+	public String makeChattingRoom(String userID, String friendID){
+		System.out.println(TAG + "make1on1ChattingRoom()");
+		String roomID = null;
+		
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rst = null;
+		try{
+			conn = JDBCUtil.getConnection();
+			stmt = conn.prepareStatement(make1on1ChattingRoomSQL, Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, userID+"/"+friendID);
+			int cnt = stmt.executeUpdate();
+
+			if(cnt > 0){
+				rst = stmt.getGeneratedKeys();
+				if(rst.next()){
+					System.out.println("Chat Room Insert Success");
+					roomID = rst.getString(1);
+					System.out.println("만들어진 방 ID : " + roomID);
+				}
+			}		
+			
+			
+		}catch(SQLException e){
+			System.out.println("make1on1ChattingRoom e : " + e);
+		}finally {
+			JDBCUtil.close(rst,stmt, conn);
+		}
+		return roomID;
+	}
+	
+	
+	
 	//일단은 ID만 받으나, 추후에 친구 초대 기능을 위해 객체로 변경 필요
 	public boolean addUserToChattingRoom(String roomID, String userID){
 		System.out.println(TAG + "addUserToChattingRoom()");

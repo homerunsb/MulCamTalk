@@ -3,6 +3,8 @@ package com.mc.mctalk.vo;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import com.mc.mctalk.view.uiitem.RoundedImageMaker;
+
 public class FriendsVO {
 	private final String DEFAULT_IMAGE = "images/default_profile.png";
 	private String userID, userName, userMsg;
@@ -33,7 +35,10 @@ public class FriendsVO {
 		if(img_path == null || img_path.equals("")){
 			img_path = DEFAULT_IMAGE;
 		}
-		ImageIcon profileImage = new ImageIcon(img_path);
+//		ImageIcon profileImage = new ImageIcon(img_path);
+		RoundedImageMaker imageMaker = new RoundedImageMaker();
+		ImageIcon profileImage = imageMaker.getRoundedImage(img_path, 70, 70);
+
 		this.profileImage = profileImage;
 	}
 }
