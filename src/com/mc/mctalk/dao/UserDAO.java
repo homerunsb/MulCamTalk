@@ -19,7 +19,7 @@ public class UserDAO {
 //	private String loginSQL = "select id from inbody_member where id = ? and pw = ? ";
 //	private String joinSQL = "insert into inbody_member values(?, ?, ?, ?, ?, ?, ?, ?, sysdate )";
 //	private String checkSQL = "select id from inbody_member where id = ? ";
-	private String searchFriendSQL = "select ur.rel_user_id, u.user_name, u.user_pf_img_path, u.user_msg "
+	private String searchAllFriendsSQL = "select ur.rel_user_id, u.user_name, u.user_pf_img_path, u.user_msg "
 												+ "from user_relation ur, users u "
 												+ "where ur.rel_user_id = u.user_id "
 												+ "and ur.user_id = ? "
@@ -36,7 +36,6 @@ public class UserDAO {
 			try{
 				conn = JDBCUtil.getConnection();
 				stmt = conn.prepareStatement(memberJoinSQL);
-				
 				
 				stmt.setString(1, memberinfoVO.getMemberId());
 				stmt.setString(2, memberinfoVO.getMemberPassword());
@@ -89,39 +88,8 @@ public class UserDAO {
 //		return id_result;
 //	}
 	
-	public List<FriendsVO> getFriendsList(String id){
-		System.out.println(TAG + "getFriendsList()");
-		ArrayList<FriendsVO> friendsList = new ArrayList<FriendsVO>();
-		
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rst = null;
-		FriendsVO vo = null;
-		try{
-			conn = JDBCUtil.getConnection();
-			stmt = conn.prepareStatement(searchFriendSQL);
-			stmt.setString(1, id);
-			rst = stmt.executeQuery();
-			
-			while(rst.next()){
-				vo = new FriendsVO();
-				vo.setUserID(rst.getString("rel_user_id"));
-				vo.setUserName(rst.getString("user_name"));
-				vo.setProfileImage(rst.getString("user_pf_img_path"));
-				vo.setUserMsg(rst.getString("user_msg"));
-				friendsList.add(vo);
-			}
-//			System.out.println("searchFriend() : " + friendsList.size());
-		}catch(SQLException e){
-			System.out.println("getFriendsList e : " + e);
-		}finally {
-			JDBCUtil.close(rst,stmt, conn);
-		}
-		return friendsList;
-	}
-	
-	public Map<String, FriendsVO> getFriendsMap(String id){
-		System.out.println(TAG + "getFriendsMap()");
+	public Map<String, FriendsVO> getAllFriendsMap(String id){
+		System.out.println(TAG + "getAllFriendsMap()");
 		Map<String, FriendsVO> friendsMap = new LinkedHashMap<String, FriendsVO>();
 		
 		Connection conn = null;
@@ -130,7 +98,7 @@ public class UserDAO {
 		FriendsVO vo = null;
 		try{
 			conn = JDBCUtil.getConnection();
-			stmt = conn.prepareStatement(searchFriendSQL);
+			stmt = conn.prepareStatement(searchAllFriendsSQL);
 			stmt.setString(1, id);
 			rst = stmt.executeQuery();
 			
@@ -144,7 +112,7 @@ public class UserDAO {
 			}
 //			System.out.println("searchFriend() : " + friendsList.size());
 		}catch(SQLException e){
-			System.out.println("getFriendsMap e : " + e);
+			System.out.println("getAllFriendsMap e : " + e);
 		}finally {
 			JDBCUtil.close(rst,stmt, conn);
 		}

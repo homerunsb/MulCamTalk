@@ -29,6 +29,16 @@ import org.jdesktop.swingx.prompt.PromptSupport;
 import com.mc.mctalk.dao.UserDAO;
 import com.mc.mctalk.vo.MemberInfoVO;
 
+/**
+ * 
+ * @author : 김영태
+ * @comment : 권석범
+ * 추가 필요한 기능 : 아이디 중복 체크 기능, 회원 가입 후, 취소 후 로그인창으로 이동 
+ * 불필요한 개행 정리 필요.
+ * boolean 변수의 시작은 is~, has~, can~ 으로 시작으로 변경 필요
+ * 93라인, 313라인 DAO 객체 중복 정의 되어 있음
+ * 전반적인 리펙토링 필요(ex. 패널8개가 배열에 들어가 있어, 각각의 패널이 어느 부분에서 어떤 역할을 하는지 유지보수 측면에서 불확실함) 
+ */
 public class MembershipFrame extends JFrame {
 	private JPanel mainPanel = new JPanel();
 	private JPanel[] panels;

@@ -1,13 +1,12 @@
 package com.mc.mctalk.vo;
 
-public class ChattingMemberVO {
+public class ChattingUserVO {
 	private String id, name;
-	private int roomID = 0;
 
-	public ChattingMemberVO() {
+	public ChattingUserVO() {
 	}
 
-	public ChattingMemberVO(String id, String name) {
+	public ChattingUserVO(String id, String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -28,11 +27,4 @@ public class ChattingMemberVO {
 		this.name = name;
 	}
 
-	public int getRoomNumber() {
-		return roomID;
-	}
-	
-	public void setRoomNumber(int roomID) {
-		this.roomID = roomID;
-	}
 }

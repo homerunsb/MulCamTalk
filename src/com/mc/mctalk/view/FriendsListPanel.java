@@ -31,6 +31,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import com.mc.mctalk.chatserver.ChattingController;
 import com.mc.mctalk.dao.UserDAO;
 import com.mc.mctalk.view.uiitem.CustomJScrollPane;
 import com.mc.mctalk.view.uiitem.SearchPanel;
@@ -41,7 +42,6 @@ public class FriendsListPanel extends JPanel {
 	ArrayList<FriendsVO> alFriendsList;
 	Map<String, FriendsVO> mapFriends;
 	JList jlFriendsList;
-//	JScrollPane scrollPane;
 	CustomJScrollPane scrollPane;
 	DefaultListModel listModel;
 	SearchPanel pSearch;
@@ -53,7 +53,6 @@ public class FriendsListPanel extends JPanel {
 		//친구 찾기 패널 생성 및 해당 서치 키워드 액션 리스너 연결
 		pSearch = new SearchPanel();
 		tfSearch = pSearch.getTfSearch();
-//		tfSearch.addActionListener(new FriendSearchListener());
 		tfSearch.addKeyListener(new FriendSearchKeyListener());
 		
 		// JList에 데이터 담기
@@ -63,7 +62,7 @@ public class FriendsListPanel extends JPanel {
 		//DB접속 후 친구 목록 가져와 Custom JList Model에 프로필 사진 path, 이름 엘리먼트 추가하기.
 		UserDAO dao = new UserDAO();
 		mapFriends = new LinkedHashMap<String, FriendsVO>();
-		mapFriends = dao.getFriendsMap(loginID);
+		mapFriends = dao.getAllFriendsMap(loginID);
 		showFriendsList();
 		
 		// JList 모양 변경
@@ -71,7 +70,6 @@ public class FriendsListPanel extends JPanel {
 		jlFriendsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jlFriendsList.addMouseListener(new FriendSelectionListener());
 		
-//		scrollPane = new JScrollPane(jlFriendsList);
 		scrollPane = new CustomJScrollPane(jlFriendsList);
 		scrollPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.lightGray));
 
@@ -79,7 +77,7 @@ public class FriendsListPanel extends JPanel {
 		this.add(scrollPane, "Center");
 	}
 	
-	//JList를 기존에 가져온 LinkedHashMap 데이터로 초기화
+	//JList를 기존에 가져온 LinkedHashMap(순서보장) 데이터로 초기화
 	public void showFriendsList(){
 		Set<Map.Entry<String, FriendsVO>> entrySet = mapFriends.entrySet();
 		Iterator<Map.Entry<String, FriendsVO>> entryIterator = entrySet.iterator();
@@ -97,23 +95,15 @@ public class FriendsListPanel extends JPanel {
 		public void mouseClicked(MouseEvent e) {
 			//getClickCount가 2 이상이면 더블클릭으로 판단함 && 선택된 인덱스가 -1이면 제대로된 선택이 아님
 			if(e.getClickCount() >= 2 && jlFriendsList.getSelectedIndex() != -1){
-				/** 채팅 프레임 호출
-				 * 1.DB 적용해서 선택된 친구리스트의 친구 ID 가져와서 ID를 가져간 채팅 방 호출 필요 
-				 * 2.방 불러오면서 방 객체, 방 멤버 객체 생성 및 값 설정 필요
-				 * 2.지난 대화 내역이 있다면 불러와지는 것도 구현?? 
-				 */ 
-				System.out.println(jlFriendsList.getSelectedValue());
-				
-				//방 불러오면서
-//				ChattingMemberVO cMember = new ChattingMemberVO(loginID, "권석범" );
-//				ChattingRoom cr = new ChattingRoom(cMember);
-				ChattingFrame cf = new ChattingFrame();
+				//선택된 친구ID와 로그인 ID를 매개변수로 컨트롤러 호출
+				FriendsVO vo = (FriendsVO)jlFriendsList.getSelectedValue();
+				new ChattingController(loginID, vo.getUserID());
 			}
 		}
-		public void mouseReleased(MouseEvent arg0) {	}
-		public void mousePressed(MouseEvent arg0) {		}
-		public void mouseExited(MouseEvent arg0) {	}
-		public void mouseEntered(MouseEvent arg0) {		}
+		public void mouseReleased(MouseEvent arg0) {}
+		public void mousePressed(MouseEvent arg0) {}
+		public void mouseExited(MouseEvent arg0) {}
+		public void mouseEntered(MouseEvent arg0) {}
 	}
 	
 	//TextField 검색 키보드 리스너(입력될때마다 리스너 실행)
@@ -128,14 +118,6 @@ public class FriendsListPanel extends JPanel {
 		}
 		@Override
 		public void keyTyped(KeyEvent e) {	
-			searchFriendsMap();
-		}
-	}
-	
-	//TextField 검색 액션 리스너(엔터키 입력시 리스너 실행)
-	class FriendSearchListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
 			searchFriendsMap();
 		}
 	}
@@ -190,7 +172,8 @@ public class FriendsListPanel extends JPanel {
 		}
 	}
 	
-	//테스트 용
+	//테스트 용(키조합 입력(Ctrl+enter) 리스너)
+	//상균이 소스 문제 없을시 삭제 필요
 	class TestKeyListener implements KeyListener {
 		int inputKey = 0;
 		int inputKey2 = 0;
@@ -204,7 +187,6 @@ public class FriendsListPanel extends JPanel {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER){
 				inputKey2 = e.getKeyCode();
 			}
-			
 		}
 
 		@Override
@@ -230,5 +212,4 @@ public class FriendsListPanel extends JPanel {
 //			System.out.println("keyTyped : " + e.getKeyCode());
 		}
 	}
-	
 }

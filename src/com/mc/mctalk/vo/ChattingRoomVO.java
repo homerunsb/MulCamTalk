@@ -2,7 +2,7 @@ package com.mc.mctalk.vo;
 
 public class ChattingRoomVO {
 	private int roomID = 0;
-	private ChattingMemberVO[] member;
+	private ChattingUserVO[] member;
 
 	public int getRoomID() {
 		return roomID;
@@ -12,11 +12,11 @@ public class ChattingRoomVO {
 		this.roomID = roomID;
 	}
 	
-	public ChattingMemberVO[] getMember() {
+	public ChattingUserVO[] getMember() {
 		return member;
 	}
 
-	public void setMember(ChattingMemberVO[] member) {
+	public void setMember(ChattingUserVO[] member) {
 		this.member = member;
 	}
 }
