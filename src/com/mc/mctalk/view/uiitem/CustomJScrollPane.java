@@ -30,12 +30,12 @@ public class CustomJScrollPane extends JScrollPane {
 		private JButton b = new JButton() {
 			@Override
 			public Dimension getPreferredSize() {
-				return new Dimension(0, 0);
+				return new Dimension(0, 0); //위아래 버튼 없애기
 			}
 		};
 
 		MyScrollbarUI() {
-			imageThumb = FauxImage.create(1, 1, Color.lightGray);
+			imageThumb = FauxImage.create(1, 1, Color.lightGray); //스크롤바 버튼 색
 			imageTrack = FauxImage.create(1, 1, new Color(238, 238, 238));
 		}
 
