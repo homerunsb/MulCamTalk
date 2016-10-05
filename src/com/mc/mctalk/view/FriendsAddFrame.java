@@ -26,7 +26,6 @@ public class FriendsAddFrame extends JFrame {
 	private JPanel secondPanel = new JPanel(); //아랫 패널
 	private JButton searchBtn = new JButton("검색");
 	
-	
 	public FriendsAddFrame(){
 		
 		firstPanel.add(addLabel);
