@@ -13,8 +13,6 @@ public class ChattingController {
 	String TAG = "ChattingController : ";
 	String loginID, friendID;
 	ChattingRoomDAO dao = new ChattingRoomDAO();
-
-
 	
 	public ChattingController(String loginID, String friendID) {
 		this.loginID = loginID;
