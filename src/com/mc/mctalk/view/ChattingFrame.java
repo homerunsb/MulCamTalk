@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.Scrollbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,164 +33,142 @@ import javax.swing.text.Segment;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
 public class ChattingFrame extends JFrame {
 
-	JPanel northpanel = new JPanel();
-	JPanel southpanel = new JPanel();
-	JButton messeageGoButton = new JButton("전송");
-	JTextPane historyChatt = new JTextPane();
-	JTextArea inputTextArea = new JTextArea(null, 3, 25);
-	JScrollPane scrollpane = new JScrollPane(inputTextArea);
-	JScrollPane scrollpane1;
-
-	
+	JPanel northpanel = new JPanel(); // 채팅 저장해놓은 패널
+	JPanel southpanel = new JPanel();// 채팅쓰는 패널
+	JButton messeageGoButton = new JButton("전송");// 전송버튼
+	JTextPane historyChatt = new JTextPane();// 채팅 저장해놓은 판
+	JTextArea taInPutChatt = new JTextArea(null, 3, 26);// 채팅 쓰는 판
+	JScrollPane scrollpane = new JScrollPane(taInPutChatt);//  taInPutChatt 을 붙인 스크롤패널
+	JScrollPane scrollpane1;//   historyChatt 에 붙인 스크롤 패널
 	StyledDocument doc = historyChatt.getStyledDocument();
-	SimpleAttributeSet rightAlign = new SimpleAttributeSet();
-	
-	Border line = BorderFactory.createLineBorder(Color.BLACK);
+	SimpleAttributeSet right = new SimpleAttributeSet();
 
-	String a, b, c;
+	Border line = BorderFactory.createLineBorder(Color.BLACK);
+	
+
+	boolean isEnter = false; // 컨트롤 엔터 값을 구별해줄 변수
 
 	public ChattingFrame() {
 		setSize(380, 550);
 		setLayout(new BorderLayout());
 		add(northpanel, BorderLayout.NORTH);
 		add(southpanel, BorderLayout.SOUTH);
+//		northpanel.setLayout(null);
+//		southpanel.setLayout(null);
 		scrollpane1 = new JScrollPane(historyChatt, scrollpane1.VERTICAL_SCROLLBAR_AS_NEEDED,
 				scrollpane1.HORIZONTAL_SCROLLBAR_NEVER);
-
 		scrollpane1.setPreferredSize(new Dimension(360, 420));
-		northpanel.add(scrollpane1);
-		historyChatt.setEditable(false);
+		northpanel.add(scrollpane1); // 채팅패널에 스크롤팬 붙임
+		historyChatt.setEditable(false); // 채팅 저장해놓을 패널에 채팅 불가
 
-		inputTextArea.setLineWrap(true);
-		
-		historyChatt.setBackground(new Color(155, 186, 216));
+		taInPutChatt.setLineWrap(true); //taInPutChatt 스크롤 생성 true
+		historyChatt.setBackground(new Color(155, 186, 216)); //historyChatt 배경색 지정
 
 		southpanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-		southpanel.add(scrollpane, BorderLayout.LINE_START);
-		southpanel.add(messeageGoButton, BorderLayout.LINE_END);
-		messeageGoButton.addActionListener(new InputActionListener());
 		messeageGoButton.setPreferredSize(new Dimension(60, 60));
-		inputTextArea.addKeyListener(new InputActionListener());
-		inputTextArea.setBorder(line);
+		southpanel.add(scrollpane);
+		southpanel.add(messeageGoButton);
+		
+		messeageGoButton.addActionListener(new TotalActionListener());
+
+		taInPutChatt.addKeyListener(new TotalActionListener());
+		taInPutChatt.setBorder(line);
 		historyChatt.setBorder(line);
+
+		StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
+		doc.setParagraphAttributes(0, doc.getLength(), right, false);
 		
-
-//		SimpleAttributeSet right = new SimpleAttributeSet();
-//		StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
-
-
-	    StyleConstants.setAlignment(rightAlign, StyleConstants.ALIGN_RIGHT);
-	    StyleConstants.setForeground(rightAlign, Color.BLACK);
-	    StyleConstants.setFontSize(rightAlign, 13);
-	    StyleConstants.setBackground(rightAlign, Color.YELLOW);
+	    StyleConstants.setForeground(right, Color.BLACK);
+	    StyleConstants.setFontSize(right, 18);
+	    StyleConstants.setBackground(right, Color.YELLOW);
+	    StyleConstants.setSpaceAbove(right, 10);
+	    StyleConstants.setLeftIndent(right, 10);
+	    StyleConstants.setRightIndent(right, 10);
 	    
-		
-		
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setVisible(true);
 
 	}
-	
-	//액션 리스너 합치기(왜 가능한지 책에서 찾아 이해하기) & 클래스명 의미 있는 이름으로 바꾸기
-	//같은 기능 메소드로 만들어 호출 하기
-	//첫번째 공백라인 들어가는 것 없애기
-	//버튼 크기 조절 필요
-	//입력값이 0일 경우 막아야 함
-	//마지막 줄 공백라인 들어가는 거 없애기
-	
-	
-	//라인 색 및 정렬 지정 시 84~87 라인, 123~126 라인 봐야 함.
-	
-	//내가 친 텍스트 오른쪽 정렬, 남이 친 텍스트 왼쪽 정렬
-	//전송 시간 텍스트 앞 or 뒤로 텍스트 크기 작게해서 붙이기
-	
-	class InputActionListener implements ActionListener, KeyListener {
-		public void appendChattingHistory() throws BadLocationException{
-			String textAreaStr =  inputTextArea.getText().trim();
-			
-			int textAreaLength  = textAreaStr.length();
-			
-			System.out.println("텍스트 입력 길이 : " +  textAreaLength);
-			
-			if(textAreaLength>1){
-				StringBuffer buffer = new StringBuffer(textAreaStr);
-				a = historyChatt.getText();
-				for (int i = 1; i < buffer.length() / 14; i++) {
-					System.out.println(buffer.length() / 14);
-					buffer.insert(14*i, "\n");
-				}
-				
-			    doc.insertString(doc.getLength(), (doc.getLength() == 0 ? "" : "\n" ) + buffer.toString(), rightAlign);
-//			    System.out.println(a.length());
-//			    System.out.println("doc.length : " + doc.getLength());
-			    doc.setParagraphAttributes(0, doc.getLength(), rightAlign, false);
-				
-//				historyChatt.setText(a + "\n" + buffer.toString());
-			}
-			inputTextArea.setText("");
-		}
-		
+
+	public static void main(String[] args) {
+		Test a = new Test();
+	}
+
+
+	class TotalActionListener implements ActionListener, KeyListener {
+		int conTrollInPut = 0;  // 컨트롤 키값을 저장해놓을 변수
+		int enterInPut = 0;		// 엔터 키값을 저장해 놓을 변수	
+
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				appendChattingHistory();
-			} catch (BadLocationException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+		public void actionPerformed(ActionEvent e) { //전송 버튼을 누르면 채팅 입력
+			if (taInPutChatt.getText().length() != 0) { 
+				textAreaSetText();
 			}
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				try {
-					appendChattingHistory();
-				} catch (BadLocationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+
+			if (KeyEvent.VK_ENTER == enterInPut) {
+				if (KeyEvent.VK_ENTER == enterInPut && KeyEvent.VK_CONTROL == conTrollInPut) {  // 엔터와 컨트롤 동시에 누를시
+					
+					isEnter = false;
+					taInPutChatt.setText(taInPutChatt.getText()+"\n"); //컨트롤 +엔터 누를시 개행 추가
+															
+					enterInPut = 0; //엔터 키값 0으로 초기화
+				} else {                  
+					if (taInPutChatt.getText().length() > 1) { //엔터만 누를시 채팅입력창의 길이가 1보다 클시 textAreaSetText 매소드 호출
+						textAreaSetText();					   // 한뒤  엔터와 컨트롤 키값 초기화	
+						conTrollInPut = 0;
+						enterInPut = 0;
+						isEnter = true;
+					} else {							//엔터만 눌럿을시 채팅입력창의 길이가 1보다 작을 경우 그냥 채팅입력창만 초기화
+						taInPutChatt.setText("");
+						conTrollInPut = 0;			// 컨트롤과 엔터 키값 초기화
+						enterInPut = 0;
+					}
 				}
+			} else {
+				conTrollInPut = 0;			//엔터도 아닐경우 키값만 초기화
+				enterInPut = 0;
 			}
-		}
-		
-		@Override
-		public void keyPressed(KeyEvent e) {
-		}
-		@Override
-		public void keyTyped(KeyEvent e) {
-		}
-	}
-	
-	
-	//상대방인지 나인지 판별하는 파라미터 받을 필요 있음
-	public void setStyleJTextPane(boolean isMyText){
-		SimpleAttributeSet leftAlign = new SimpleAttributeSet();
-	    SimpleAttributeSet rightAlign = new SimpleAttributeSet();
-	    
-	    StyleConstants.setAlignment(leftAlign, StyleConstants.ALIGN_LEFT);
-	    StyleConstants.setForeground(leftAlign, Color.black);
-	    StyleConstants.setFontSize(leftAlign, 13);
-	    StyleConstants.setBackground(leftAlign, Color.WHITE);
-	    
-	    StyleConstants.setAlignment(rightAlign, StyleConstants.ALIGN_RIGHT);
-	    StyleConstants.setForeground(rightAlign, Color.black);
-	    StyleConstants.setFontSize(rightAlign, 13);
-	    StyleConstants.setBackground(rightAlign, Color.YELLOW);
-		if(isMyText){
 
 		}
-//	    doc
-	    
+
+		public void keyTyped(KeyEvent e) {
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == KeyEvent.VK_CONTROL) {   //컨트롤을 눌렀을시conTrollInPut 변수에 키값 저장
+				conTrollInPut = e.getKeyCode();
+			}
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {		//엔터를 눌렀을시 enterInPut 변수에 키값 저장
+				enterInPut = e.getKeyCode();
+			}
+		}
 	}
 	
-	
-	
-	public static void main(String[] args) {
-		ChattingFrame a = new ChattingFrame();
+	void textAreaSetText() {
+
+		StringBuffer buffer = new StringBuffer(taInPutChatt.getText()); 
+																	
+		if (buffer.length() > 20) {  				// 채팅 입력의 길이가 33 보다 클 경우 33번째에 개행 추가
+			for (int i = 1; i <= buffer.length() / 20; i++) { 
+				buffer.insert(20 * i, "\n");
+			}
+		}
+		try {                  
+			doc.insertString(doc.getLength(), buffer.toString(), right); //버퍼에서 따와서 길이만큼 넣기
+			doc.setParagraphAttributes(0, doc.getLength(), right, false);
+			taInPutChatt.setText("");  //채팅입력창 초기화
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 	}
-	
 }
