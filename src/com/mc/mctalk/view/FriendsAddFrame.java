@@ -1,6 +1,10 @@
 package com.mc.mctalk.view;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /*
  * 담당자 : 정대용
@@ -15,7 +19,19 @@ import javax.swing.JFrame;
  */
 
 public class FriendsAddFrame extends JFrame {
-	FriendsAddFrame(){
+	private JPanel firstPanel = new JPanel(); //윗 패널
+	private JLabel addLabel = new JLabel("검색할 아이디를 입력하시오.");
+	private JTextField nameField = new JTextField(26);
+	
+	private JPanel secondPanel = new JPanel(); //아랫 패널
+	private JButton searchBtn = new JButton("검색");
+	
+	public FriendsAddFrame(){
+		
+		firstPanel.add(addLabel);
+		firstPanel.add(nameField);
+		add(firstPanel);
+		
 		this.setTitle("친구 추가");
 		this.setSize(300, 360);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
