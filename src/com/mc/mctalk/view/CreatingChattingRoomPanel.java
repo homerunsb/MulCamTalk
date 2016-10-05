@@ -95,7 +95,7 @@ public class CreatingChattingRoomPanel extends JFrame {
 		// middlePanel setting
 		middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.X_AXIS));
 		friendListPannel.setPreferredSize(new Dimension(100, 100));
-		friendListPannel.tfSearch.setPreferredSize(new Dimension(220, 25));
+		friendListPannel.tfSearch.setPreferredSize(new Dimension(230, 15));
 		friendListPannel.pSearch.setBackground(Color.white);
 		friendListPannel.tfSearch.setBackground(Color.white);
 		middlePanel.add(friendListPannel);
