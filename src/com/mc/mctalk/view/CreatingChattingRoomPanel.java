@@ -175,15 +175,9 @@ public class CreatingChattingRoomPanel extends JFrame {
 					}
 				});
 				chatCreat.start();
-				try {
-					chatCreat.join();
-					ChattingFrame ff = new ChattingFrame();
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				System.out.println(Thread.currentThread().getState()+"");
-
+				dispose();
+				
+				
 			}
 		});
 
