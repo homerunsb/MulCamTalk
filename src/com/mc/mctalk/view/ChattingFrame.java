@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -42,40 +41,36 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 
-import com.mc.mctalk.view.uiitem.CustomJScrollPane;
-
 public class ChattingFrame extends JFrame {
-	JPanel coverPanel = new JPanel();
+
 	JPanel northpanel = new JPanel(); // 채팅 저장해놓은 패널
 	JPanel southpanel = new JPanel();// 채팅쓰는 패널
 	JButton messeageGoButton = new JButton("전송");// 전송버튼
 	JTextPane historyChatt = new JTextPane();// 채팅 저장해놓은 판
 	JTextArea taInPutChatt = new JTextArea(null, 3, 26);// 채팅 쓰는 판
 	JScrollPane scrollpane = new JScrollPane(taInPutChatt);//  taInPutChatt 을 붙인 스크롤패널
-	CustomJScrollPane scrollpane1;                      //   historyChatt 에 붙인 스크롤 패널
+	JScrollPane scrollpane1;                      //   historyChatt 에 붙인 스크롤 패널
 	StyledDocument doc = historyChatt.getStyledDocument();
 	SimpleAttributeSet right = new SimpleAttributeSet();
 	SimpleAttributeSet time = new SimpleAttributeSet();
 	Date date = new Date();
     SimpleDateFormat simple = new SimpleDateFormat("aahh:mm");
-	Border line = BorderFactory.createEmptyBorder();
+    
+    
+
+
+	Border line = BorderFactory.createLineBorder(Color.BLACK);
+
+
 	boolean isEnter = false; // 컨트롤 엔터 값을 구별해줄 변수
+	
 
 	public ChattingFrame() {
 		setSize(380, 550);
-		
-		//배경색 지정
-		setBackground(new Color(155, 186, 216)); 
-		northpanel.setBackground(new Color(155, 186, 216)); 
-		southpanel.setBackground(new Color(155, 186, 216)); 
-
-		//추가
-		coverPanel.setLayout(new BoxLayout(coverPanel, BoxLayout.Y_AXIS));
-		coverPanel.add(northpanel);
-		coverPanel.add(southpanel);
-		add(coverPanel);
-		
-		scrollpane1 = new CustomJScrollPane(historyChatt, scrollpane1.VERTICAL_SCROLLBAR_AS_NEEDED,
+		setLayout(new BorderLayout());
+		add(northpanel, BorderLayout.NORTH);
+		add(southpanel, BorderLayout.SOUTH);
+		scrollpane1 = new JScrollPane(historyChatt, scrollpane1.VERTICAL_SCROLLBAR_AS_NEEDED,
 				scrollpane1.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollpane1.setPreferredSize(new Dimension(360, 420));
 		northpanel.add(scrollpane1); // 채팅패널에 스크롤팬 붙임
@@ -94,7 +89,6 @@ public class ChattingFrame extends JFrame {
 		taInPutChatt.addKeyListener(new TotalActionListener());
 		taInPutChatt.setBorder(line);
 		historyChatt.setBorder(line);
-		scrollpane1.setBorder(line);
 
 		StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
 		
