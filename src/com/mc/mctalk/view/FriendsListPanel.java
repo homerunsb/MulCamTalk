@@ -42,20 +42,20 @@ import com.mc.mctalk.chatserver.ChattingController;
 import com.mc.mctalk.dao.UserDAO;
 import com.mc.mctalk.view.uiitem.CustomJScrollPane;
 import com.mc.mctalk.view.uiitem.SearchPanel;
-import com.mc.mctalk.vo.FriendsVO;
+import com.mc.mctalk.vo.UserVO;
 import com.mc.mctalk.view.uiitem.RoundedImageMaker;
 
 public class FriendsListPanel extends JPanel {
 	//선택된 친구목록 모음 (맵)
-	Map<String, FriendsVO> selectedFriends = new LinkedHashMap<>();
+	Map<String, UserVO> selectedFriends = new LinkedHashMap<>();
 	Robot clickRobot ;
 	
 	
 	
 	
 	String loginID = MainFrame.getLoginID();
-	ArrayList<FriendsVO> alFriendsList;
-	Map<String, FriendsVO> mapFriends;
+	ArrayList<UserVO> alFriendsList;
+	Map<String, UserVO> mapFriends;
 	JList jlFriendsList;
 	CustomJScrollPane scrollPane;
 	DefaultListModel listModel;
@@ -76,7 +76,7 @@ public class FriendsListPanel extends JPanel {
 		
 		//DB접속 후 친구 목록 가져와 Custom JList Model에 프로필 사진 path, 이름 엘리먼트 추가하기.
 		UserDAO dao = new UserDAO();
-		mapFriends = new LinkedHashMap<String, FriendsVO>();
+		mapFriends = new LinkedHashMap<String, UserVO>();
 		mapFriends = dao.getAllFriendsMap(loginID);
 		addElementToJList();
 		
@@ -113,12 +113,12 @@ public class FriendsListPanel extends JPanel {
 	
 	//JList를 기존에 가져온 LinkedHashMap(순서보장) 데이터로 초기화
 	public void addElementToJList(){
-		Set<Map.Entry<String, FriendsVO>> entrySet = mapFriends.entrySet();
-		Iterator<Map.Entry<String, FriendsVO>> entryIterator = entrySet.iterator();
+		Set<Map.Entry<String, UserVO>> entrySet = mapFriends.entrySet();
+		Iterator<Map.Entry<String, UserVO>> entryIterator = entrySet.iterator();
 		while (entryIterator.hasNext()) {
-			Map.Entry<String, FriendsVO> entry = entryIterator.next();
+			Map.Entry<String, UserVO> entry = entryIterator.next();
 			String key = entry.getKey();
-			FriendsVO vo = entry.getValue();
+			UserVO vo = entry.getValue();
 			listModel.addElement(vo);
 		}
 	}
@@ -130,7 +130,7 @@ public class FriendsListPanel extends JPanel {
 			//getClickCount가 2 이상이면 더블클릭으로 판단함 && 선택된 인덱스가 -1이면 제대로된 선택이 아님
 			if(e.getClickCount() >= 2 && jlFriendsList.getSelectedIndex() != -1){
 				//선택된 친구ID와 로그인 ID를 매개변수로 컨트롤러 호출
-				FriendsVO vo = (FriendsVO)jlFriendsList.getSelectedValue();
+				UserVO vo = (UserVO)jlFriendsList.getSelectedValue();
 				new ChattingController(loginID, vo.getUserID());
 			}
 		}
@@ -145,18 +145,18 @@ public class FriendsListPanel extends JPanel {
 
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 1) {
-				List<FriendsVO> voList = jlFriendsList.getSelectedValuesList();
+				List<UserVO> voList = jlFriendsList.getSelectedValuesList();
 			if(selectedFriends.size()< voList.size()){
-				for (FriendsVO vo : voList) {
+				for (UserVO vo : voList) {
 					if (!selectedFriends.containsKey(vo.getUserID())) {
 						selectedFriends.put(vo.getUserID(), vo);
 					}
 				}
 			}else if(selectedFriends.size()> voList.size()){
-				Iterator<Entry<String, FriendsVO>> haveit = selectedFriends.entrySet().iterator();
+				Iterator<Entry<String, UserVO>> haveit = selectedFriends.entrySet().iterator();
 				String removeTarget = null;
 				while(haveit.hasNext()){
-				FriendsVO f =	(FriendsVO) haveit.next().getValue();
+				UserVO f =	(UserVO) haveit.next().getValue();
 					if(!voList.contains(f)){
 						removeTarget = f.getUserID();
 					}
@@ -223,8 +223,8 @@ public class FriendsListPanel extends JPanel {
 		//DB를 다시 붙는 개념이 아니고, 최초 1번만 붙어서 받아온 데이터를 담고 있는 map에 대한 컨트롤임.
 		//메뉴 이동시 & 친구 추가시 친구 리스트에 대한 refresh 필요할 듯.
 			listModel.removeAllElements();
-			for (Map.Entry<String, FriendsVO> entry : mapFriends.entrySet()) {
-				FriendsVO vo = entry.getValue();
+			for (Map.Entry<String, UserVO> entry : mapFriends.entrySet()) {
+				UserVO vo = entry.getValue();
 				if (vo.getUserName().contains(inputSearchText)) {
 					listModel.addElement(vo);
 				} else {
@@ -235,7 +235,7 @@ public class FriendsListPanel extends JPanel {
 	}
 	
 	//JList 모양 변경
-	class FriendsListCellRenderer extends JPanel implements ListCellRenderer<FriendsVO> {
+	class FriendsListCellRenderer extends JPanel implements ListCellRenderer<UserVO> {
 		private JLabel lbImgIcon = new JLabel();
 		private JLabel lbName = new JLabel();
 		private JLabel lbStatMsg = new JLabel();
@@ -261,10 +261,10 @@ public class FriendsListPanel extends JPanel {
 		}
 		
 		@Override
-		public Component getListCellRendererComponent(JList<? extends FriendsVO> list, FriendsVO value, int index,
+		public Component getListCellRendererComponent(JList<? extends UserVO> list, UserVO value, int index,
 				boolean isSelected, boolean cellHasFocus) {
-			//받아온 JList의 값을 FriendsVO 객체에 담기
-			FriendsVO vo = (FriendsVO) value;
+			//받아온 JList의 값을 UserVO 객체에 담기
+			UserVO vo = (UserVO) value;
 			//리턴할 객체에 이미지, 이름과, 상태 메세지 세팅
 			lbImgIcon.setIcon(vo.getProfileImage());
 			lbName.setText(vo.getUserName());

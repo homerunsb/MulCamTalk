@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import javax.swing.BoxLayout;
@@ -26,7 +27,9 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
-import com.mc.mctalk.vo.FriendsVO;
+import com.mc.mctalk.chatserver.ChattingController;
+import com.mc.mctalk.dao.ChattingRoomDAO;
+import com.mc.mctalk.vo.UserVO;
 
 public class CreatingChattingRoomPanel extends JFrame {
 	private JPanel topPanel = new JPanel();
@@ -38,11 +41,11 @@ public class CreatingChattingRoomPanel extends JFrame {
 	private JPanel middleSerchSpace = new JPanel();
 	private JPanel middleSelectedFriendListPanel = new JPanel();
 	private FriendsListPanel friendListPannel = new FriendsListPanel(true);
-	private JList<FriendsVO> selectedList;
+	private JList<UserVO> selectedList;
 	private JButton closeBtn = new JButton("X"); // 나중에 이미지로 주면 이쁠것같다.
 	private JButton confirmBtn = new JButton("확인");
 	private JButton cancelBtn = new JButton("취소");
-	private DefaultListModel<FriendsVO> listmodel = new DefaultListModel<>();
+	private DefaultListModel<UserVO> listmodel = new DefaultListModel<>();
 	private JLabel topPanelLabel = new JLabel();
 	private JLabel topCountLabel = new JLabel("" + count);
 	private static int count = 0;
@@ -107,7 +110,7 @@ public class CreatingChattingRoomPanel extends JFrame {
 			}
 			public void mouseClicked(MouseEvent e) {
 				listmodel.removeAllElements();
-				Iterator<Entry<String, FriendsVO>> entry = friendListPannel.selectedFriends.entrySet().iterator();
+				Iterator<Entry<String, UserVO>> entry = friendListPannel.selectedFriends.entrySet().iterator();
 				for (int i = 0; i < friendListPannel.selectedFriends.size(); i++) {
 
 					listmodel.addElement(entry.next().getValue());
@@ -124,9 +127,15 @@ public class CreatingChattingRoomPanel extends JFrame {
 		// 버튼 액션 리스너!!!
 		confirmBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				LinkedHashMap<String, UserVO> lastSelected = (LinkedHashMap<String, UserVO>) friendListPannel.selectedFriends;
+				
+				//
+				//
+				
+				
 				Thread chatCreat = new Thread(new Runnable() {
 					public void run() {
-						ChattingFrame cf = new ChattingFrame();
+						ChattingController makeRoom = new ChattingController(MainFrame.getLoginID(), lastSelected);
 					}
 				});
 				chatCreat.start();
@@ -151,8 +160,8 @@ public class CreatingChattingRoomPanel extends JFrame {
 			Border border = comp.getBorder();
 			Border margin = new EmptyBorder(0, 0, 0, 0);
 			comp.setBorder(new CompoundBorder(border, margin));
-			// 받아온 JList의 값을 FriendsVO 객체에 담기
-			FriendsVO vo = (FriendsVO) value;
+			// 받아온 JList의 값을 UserVO 객체에 담기
+			UserVO vo = (UserVO) value;
 			// 리턴할 객체에 이미지, 이름과, 상태 메세지 세팅
 			// comp.setIcon(vo.getProfileImage());
 			comp.setText(vo.getUserName());

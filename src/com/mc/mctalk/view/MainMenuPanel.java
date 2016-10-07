@@ -9,20 +9,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-
-import com.mc.mctalk.vo.FriendsVO;
 
 public class MainMenuPanel extends JPanel {
 	private MainFrame mainFrame;
@@ -172,7 +165,8 @@ public class MainMenuPanel extends JPanel {
 			if(selectedIndex==0){
 				FriendsAddFrame addFriend = new FriendsAddFrame();
 			}else{
-				//방 추가 프레임 연결 필요
+				//방 추가 프레임 연결 2016.10.7
+				CreatingChattingRoomPanel creatingChattingRoom = new CreatingChattingRoomPanel();
 			}
 			System.out.println(selectedIndex);
 			
