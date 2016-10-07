@@ -1,19 +1,9 @@
 package com.mc.mctalk.dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.mc.mctalk.vo.ChattingRoomVO;
-import com.mc.mctalk.vo.FriendsVO;
-import com.mc.mctalk.vo.MemberInfoVO;
 import com.mysql.jdbc.Statement;
 
 public class ChattingRoomDAO {

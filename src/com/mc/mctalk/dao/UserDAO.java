@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mc.mctalk.vo.FriendsVO;
+import com.mc.mctalk.vo.UserVO;
 import com.mc.mctalk.vo.MemberInfoVO;
 
 public class UserDAO {
@@ -88,14 +88,14 @@ public class UserDAO {
 //		return id_result;
 //	}
 	
-	public Map<String, FriendsVO> getAllFriendsMap(String id){
+	public Map<String, UserVO> getAllFriendsMap(String id){
 		System.out.println(TAG + "getAllFriendsMap()");
-		Map<String, FriendsVO> friendsMap = new LinkedHashMap<String, FriendsVO>();
+		Map<String, UserVO> friendsMap = new LinkedHashMap<String, UserVO>();
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rst = null;
-		FriendsVO vo = null;
+		UserVO vo = null;
 		try{
 			conn = JDBCUtil.getConnection();
 			stmt = conn.prepareStatement(searchAllFriendsSQL);
@@ -103,7 +103,7 @@ public class UserDAO {
 			rst = stmt.executeQuery();
 			
 			while(rst.next()){
-				vo = new FriendsVO();
+				vo = new UserVO();
 				vo.setUserID(rst.getString("rel_user_id"));
 				vo.setUserName(rst.getString("user_name"));
 				vo.setProfileImage(rst.getString("user_pf_img_path"));
