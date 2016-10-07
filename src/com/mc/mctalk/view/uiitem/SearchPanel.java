@@ -29,7 +29,7 @@ public class SearchPanel extends JPanel{
 		// 친구 검색 창 placeHolder 설정
 		// 앞 부분에 돋보기 모양 작은 이미지 박스 추가 필요
 		// placeholder 색 변경 및 PANEL 크기 조정 필요
-		tfSearch = new JTextField(29);
+		tfSearch = new JTextField();
 		tfSearch.setPreferredSize(new Dimension(290, 15));
 		tfSearch.setBorder(BorderFactory.createEmptyBorder());
 		PromptSupport.setPrompt("이름검색", tfSearch);
