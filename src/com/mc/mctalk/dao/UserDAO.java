@@ -1,14 +1,10 @@
 package com.mc.mctalk.dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.mc.mctalk.vo.UserVO;
@@ -27,7 +23,7 @@ public class UserDAO {
 			+ "values(?,?,?,?,now(),now()) ";
 	
 	
-	public boolean joinMember(MemberInfoVO memberinfoVO){
+	public boolean joinMember(UserVO memberinfoVO){
 			boolean insertSucess=false;
 			Connection conn = null;
 			PreparedStatement stmt = null;
@@ -36,10 +32,10 @@ public class UserDAO {
 				conn = JDBCUtil.getConnection();
 				stmt = conn.prepareStatement(memberJoinSQL);
 				
-				stmt.setString(1, memberinfoVO.getMemberId());
-				stmt.setString(2, memberinfoVO.getMemberPassword());
-				stmt.setString(3, memberinfoVO.getMemberName());
-				stmt.setString(4, memberinfoVO.getMemberSex()+"");
+				stmt.setString(1, memberinfoVO.getUserID());
+				stmt.setString(2, memberinfoVO.getUserPassword());
+				stmt.setString(3, memberinfoVO.getUserName());
+				stmt.setString(4, memberinfoVO.getUserSex()+"");
 				
 				int cnt = stmt.executeUpdate();
 				if(cnt > 0){

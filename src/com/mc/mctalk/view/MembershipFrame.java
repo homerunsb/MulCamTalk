@@ -25,7 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 import org.jdesktop.swingx.prompt.PromptSupport;
 import com.mc.mctalk.dao.UserDAO;
-import com.mc.mctalk.vo.MemberInfoVO;
+import com.mc.mctalk.vo.UserVO;
 /**
  * 
  * @author : 김영태
@@ -67,7 +67,7 @@ public class MembershipFrame extends JFrame {
 	private ActionCheckManSexBox checkManSex = new ActionCheckManSexBox();
 	private ActionCheckWomanSexBox checkWomanSex = new ActionCheckWomanSexBox();
 	private JOptionPane NullWarning = new JOptionPane();
-	private Map<String, MemberInfoVO> memberInfos = new HashMap<String, MemberInfoVO>();
+	private Map<String, UserVO> memberInfos = new HashMap<String, UserVO>();
 	private List<JPanel> panels = new ArrayList<>();
 	private JPanel logoPanel = new JPanel();
 	private	JPanel idPanel = new JPanel();
@@ -257,9 +257,10 @@ public class MembershipFrame extends JFrame {
 			if(!idfield.getText().equals("")&&!passwordfield.getText().equals("")
 					&&!nameTextfield.getText().equals("")&&!(checkSexReuslt == 2)
 					&&!(monthCombo.getSelectedIndex() == 0)&&!(dayCombo.getSelectedIndex() == 0)){
-				memberInfos.put(idfield.getText(),
-						new MemberInfoVO(idfield.getText(), passwordfield.getText(), nameTextfield.getText(),
-								checkSexReuslt, monthCombo.getSelectedIndex(), dayCombo.getSelectedIndex()));
+				UserVO vo = new UserVO(idfield.getText(), passwordfield.getText(), nameTextfield.getText(), checkSexReuslt, 
+						monthCombo.getSelectedIndex(), dayCombo.getSelectedIndex()); 
+				memberInfos.put(idfield.getText(),vo);
+				
 				UserDAO memberDAO = new UserDAO();
 				if(memberDAO.joinMember(memberInfos.get(idfield.getText()))){
 					NullWarning.showMessageDialog(joinbtnPanel, "가입완료!!"); 

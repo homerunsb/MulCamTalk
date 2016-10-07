@@ -66,6 +66,19 @@ public class UserVO implements Serializable{
 	public Icon getProfileImage() {
 		return profileImage;
 	}
+	
+	public UserVO(){
+		
+	}
+	
+	
+	
+	public UserVO(String text, String text2, String text3, int memberSex, int memberBirthMonth, int memberBirthDay) {
+		this.userID = text;
+		this.userPassword =text2;
+		this.userName = text3;
+		this.userSex = memberSex;
+		this.userBirth = "month : " + memberBirthMonth + " day : " + memberBirthDay;	}
 	public void setProfileImage(String img_path) {
 		//프로필 이미지가 지정이 안되어 있을시 디폴트 이미지 사용
 		if(img_path == null || img_path.equals("")){

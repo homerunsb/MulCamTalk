@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+
 import com.mc.mctalk.vo.UserVO;
 import com.mysql.jdbc.Statement;
 
@@ -76,7 +76,7 @@ public class ChattingRoomDAO {
 		try{
 			conn = JDBCUtil.getConnection();
 			stmt = conn.prepareStatement(make1on1ChattingRoomSQL, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, userID+"/"+friendID);
+			stmt.setString(1, userID+"/"+friendID); 
 			int cnt = stmt.executeUpdate();
 
 			if(cnt > 0){
@@ -98,17 +98,24 @@ public class ChattingRoomDAO {
 	}
 	
 	//인원수와 상관없이 방을 만들자.
-	public String makeChattingRoom(String userID, String friendID){
+	// 리스트를 매개변수로 받아서 여러명들을 처리하도록 하겠음. 
+	public String makeChattingRoom(String userID, LinkedHashMap<String, UserVO> lastSelected ){
 		System.out.println(TAG + "make1on1ChattingRoom()");
 		String roomID = null;
-		
+		String friendNames = null;
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rst = null;
 		try{
 			conn = JDBCUtil.getConnection();
 			stmt = conn.prepareStatement(make1on1ChattingRoomSQL, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, userID+"/"+friendID);
+			Iterator<Entry<String, UserVO>> entry = lastSelected.entrySet().iterator();
+			for(int i =0 ; i<lastSelected.size(); i++){
+				friendNames += "/"+ entry.next().getValue().getUserName();
+			}
+			
+			
+			stmt.setString(1, userID+"/"+friendNames);// 방이름이 될 것이다. 
 			int cnt = stmt.executeUpdate();
 
 			if(cnt > 0){

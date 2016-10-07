@@ -1,7 +1,12 @@
 package com.mc.mctalk.chatserver;
 
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+
 import com.mc.mctalk.dao.ChattingRoomDAO;
 import com.mc.mctalk.view.ChattingFrame;
+import com.mc.mctalk.vo.UserVO;
 
 /** 채팅 프레임 호출
  * 1.DB 적용해서 선택된 친구리스트의 친구 ID 가져와서 ID를 가져간 채팅 방 호출 필요 
@@ -13,11 +18,20 @@ public class ChattingController {
 	String TAG = "ChattingController : ";
 	String loginID, friendID;
 	ChattingRoomDAO dao = new ChattingRoomDAO();
-	
+	LinkedHashMap<String, UserVO> selectedFriends;
 	public ChattingController(String loginID, String friendID) {
 		this.loginID = loginID;
 		this.friendID = friendID;
 		hasChattingRoom();
+	}
+	
+	//다중선택시 오버로
+	public ChattingController(String loginID, LinkedHashMap<String, UserVO> selectedFriends) {
+		this.loginID = loginID;
+		this.selectedFriends = selectedFriends;
+		String roomID = make1onNChattingRoom();
+		openChattingRoom(roomID);
+		
 	}
 	
 	
@@ -43,6 +57,23 @@ public class ChattingController {
 		}
 		return roomID;
 	}
+	
+	public String make1onNChattingRoom(){
+		//user들을 객체로 받아서 반복문으로 insert 해줄 필요 있음
+		String roomID = dao.makeChattingRoom(loginID, selectedFriends);
+		if(roomID!=null){
+			System.out.println(roomID);
+			dao.addUserToChattingRoom(roomID, loginID);
+			Iterator<Entry<String, UserVO>> entry = selectedFriends.entrySet().iterator();
+			for(int i=0; i<selectedFriends.size();i++){
+				dao.addUserToChattingRoom(roomID, entry.next().getValue().getUserID());
+				
+			}
+		}
+		return roomID;
+	}
+	
+	
 	
 	public void openChattingRoom(String roomID){
 		//연결시 대화 상대들을 인자로 받게끔 설정 필요
