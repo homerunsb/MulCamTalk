@@ -12,6 +12,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -44,22 +49,27 @@ public class ChattingFrame extends JFrame {
 	JTextPane historyChatt = new JTextPane();// 채팅 저장해놓은 판
 	JTextArea taInPutChatt = new JTextArea(null, 3, 26);// 채팅 쓰는 판
 	JScrollPane scrollpane = new JScrollPane(taInPutChatt);//  taInPutChatt 을 붙인 스크롤패널
-	JScrollPane scrollpane1;//   historyChatt 에 붙인 스크롤 패널
+	JScrollPane scrollpane1;                      //   historyChatt 에 붙인 스크롤 패널
 	StyledDocument doc = historyChatt.getStyledDocument();
 	SimpleAttributeSet right = new SimpleAttributeSet();
+	SimpleAttributeSet time = new SimpleAttributeSet();
+	Date date = new Date();
+    SimpleDateFormat simple = new SimpleDateFormat("aahh:mm");
+    
+    
+
 
 	Border line = BorderFactory.createLineBorder(Color.BLACK);
-	
+
 
 	boolean isEnter = false; // 컨트롤 엔터 값을 구별해줄 변수
+	
 
 	public ChattingFrame() {
 		setSize(380, 550);
 		setLayout(new BorderLayout());
 		add(northpanel, BorderLayout.NORTH);
 		add(southpanel, BorderLayout.SOUTH);
-//		northpanel.setLayout(null);
-//		southpanel.setLayout(null);
 		scrollpane1 = new JScrollPane(historyChatt, scrollpane1.VERTICAL_SCROLLBAR_AS_NEEDED,
 				scrollpane1.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollpane1.setPreferredSize(new Dimension(360, 420));
@@ -81,7 +91,6 @@ public class ChattingFrame extends JFrame {
 		historyChatt.setBorder(line);
 
 		StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
-		doc.setParagraphAttributes(0, doc.getLength(), right, false);
 		
 	    StyleConstants.setForeground(right, Color.BLACK);
 	    StyleConstants.setFontSize(right, 18);
@@ -89,6 +98,11 @@ public class ChattingFrame extends JFrame {
 	    StyleConstants.setSpaceAbove(right, 10);
 	    StyleConstants.setLeftIndent(right, 10);
 	    StyleConstants.setRightIndent(right, 10);
+	    StyleConstants.setFontSize(time, 9);
+	    StyleConstants.setFontFamily(time, "Malgun Gothic");
+	    
+	    
+	    scrollpane1.getVerticalScrollBar().setValue(scrollpane1.getVerticalScrollBar().getMaximum());
 	    
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setVisible(true);
@@ -96,7 +110,7 @@ public class ChattingFrame extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		Test a = new Test();
+		ChattingFrame a = new ChattingFrame();
 	}
 
 
@@ -106,24 +120,25 @@ public class ChattingFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) { //전송 버튼을 누르면 채팅 입력
-			if (taInPutChatt.getText().length() != 0) { 
-				textAreaSetText();
-			}
+			String str = taInPutChatt.getText()+"\n";
+			textAreaSetText(str);
+			
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
+			String str = taInPutChatt.getText();
 
 			if (KeyEvent.VK_ENTER == enterInPut) {
 				if (KeyEvent.VK_ENTER == enterInPut && KeyEvent.VK_CONTROL == conTrollInPut) {  // 엔터와 컨트롤 동시에 누를시
 					
 					isEnter = false;
-					taInPutChatt.setText(taInPutChatt.getText()+"\n"); //컨트롤 +엔터 누를시 개행 추가
+					taInPutChatt.setText(str+"\n"); //컨트롤 +엔터 누를시 개행 추가
 															
 					enterInPut = 0; //엔터 키값 0으로 초기화
 				} else {                  
-					if (taInPutChatt.getText().length() > 1) { //엔터만 누를시 채팅입력창의 길이가 1보다 클시 textAreaSetText 매소드 호출
-						textAreaSetText();					   // 한뒤  엔터와 컨트롤 키값 초기화	
+					if (str.length() > 1) { //엔터만 누를시 채팅입력창의 길이가 1보다 클시 textAreaSetText 매소드 호출
+						textAreaSetText(str);					   // 한뒤  엔터와 컨트롤 키값 초기화	
 						conTrollInPut = 0;
 						enterInPut = 0;
 						isEnter = true;
@@ -133,10 +148,12 @@ public class ChattingFrame extends JFrame {
 						enterInPut = 0;
 					}
 				}
+				
 			} else {
 				conTrollInPut = 0;			//엔터도 아닐경우 키값만 초기화
 				enterInPut = 0;
 			}
+			
 
 		}
 
@@ -150,21 +167,48 @@ public class ChattingFrame extends JFrame {
 			}
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {		//엔터를 눌렀을시 enterInPut 변수에 키값 저장
 				enterInPut = e.getKeyCode();
+				if(taInPutChatt.getText().equals("\n")){
+					taInPutChatt.setText("");
+				}
 			}
 		}
 	}
 	
-	void textAreaSetText() {
+	void textAreaSetText(String str) {
 
-		StringBuffer buffer = new StringBuffer(taInPutChatt.getText()); 
-																	
-		if (buffer.length() > 20) {  				// 채팅 입력의 길이가 33 보다 클 경우 33번째에 개행 추가
-			for (int i = 1; i <= buffer.length() / 20; i++) { 
-				buffer.insert(20 * i, "\n");
+		StringBuffer buffer = new StringBuffer(str);
+
+		if (buffer.length() > 15) { // 채팅 입력의 길이가 33 보다 클 경우 33번째에 개행 추가
+			for (int i = 1; i <= buffer.length() / 15; i++) {
+				buffer.insert(15 * i, "\n");
 			}
 		}
-		try {                  
-			doc.insertString(doc.getLength(), buffer.toString(), right); //버퍼에서 따와서 길이만큼 넣기
+		try {
+
+			String dTime = (simple.format(date));
+
+			ArrayList temp = new ArrayList();
+			str = buffer.toString();
+
+			for (int i = 0; i < str.length(); i++) {
+				if (str.charAt(i) == '\n') {
+					temp.add(i);
+				}
+			}
+
+			// 무조건 실행
+			doc.insertString(doc.getLength(), buffer.toString(), right); // 버퍼에서 따와서 길이만큼 넣기
+
+			int index = 0;
+			if (temp.size() > 1) {
+	        	 
+	            index = (int) temp.get(temp.size()-1) - (int) temp.get((temp.size()-2));
+	            doc.insertString(doc.getLength()-index, dTime, time); //버퍼에서 따와서 길이만큼 넣기
+	         }else{
+	            doc.insertString(doc.getLength()-buffer.length(), dTime, time);
+	         }
+			   
+
 			doc.setParagraphAttributes(0, doc.getLength(), right, false);
 			taInPutChatt.setText("");  //채팅입력창 초기화
 		} catch (BadLocationException e) {
