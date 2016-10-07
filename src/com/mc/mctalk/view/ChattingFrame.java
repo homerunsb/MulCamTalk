@@ -211,7 +211,7 @@ public class ChattingFrame extends JFrame {
 
 			doc.setParagraphAttributes(0, doc.getLength(), right, false);
 			taInPutChatt.setText("");  //채팅입력창 초기화
-		} catch (BadLocationException e) {
+		} catch (BadLocationException e) { //주석
 			e.printStackTrace();
 		}
 	}
