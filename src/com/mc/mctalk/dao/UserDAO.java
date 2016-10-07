@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.mc.mctalk.vo.UserVO;
-import com.mc.mctalk.vo.MemberInfoVO;
 
 public class UserDAO {
 	private final String TAG = "UserDAO : ";

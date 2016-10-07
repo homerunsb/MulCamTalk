@@ -164,7 +164,8 @@ public class MainMenuPanel extends JPanel {
 			if(selectedIndex==0){
 				FriendsAddFrame addFriend = new FriendsAddFrame();
 			}else{
-				//방 추가 프레임 연결 필요
+				//방 추가 프레임 연결 2016.10.7
+				CreatingChattingRoomPanel creatingChattingRoom = new CreatingChattingRoomPanel();
 			}
 			System.out.println(selectedIndex);
 			
