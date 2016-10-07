@@ -1,11 +1,13 @@
 package com.mc.mctalk.view;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -43,6 +46,13 @@ import com.mc.mctalk.vo.FriendsVO;
 import com.mc.mctalk.view.uiitem.RoundedImageMaker;
 
 public class FriendsListPanel extends JPanel {
+	//선택된 친구목록 모음 (맵)
+	Map<String, FriendsVO> selectedFriends = new LinkedHashMap<>();
+	Robot clickRobot ;
+	
+	
+	
+	
 	String loginID = MainFrame.getLoginID();
 	ArrayList<FriendsVO> alFriendsList;
 	Map<String, FriendsVO> mapFriends;
@@ -81,6 +91,25 @@ public class FriendsListPanel extends JPanel {
 		this.add(pSearch, "North");
 		this.add(scrollPane, "Center");
 	}
+	// 다중선택 여부 생성
+	public FriendsListPanel(boolean hasMultiSelectionFuntion){
+		this();
+		if (hasMultiSelectionFuntion) {
+			jlFriendsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+		} else {
+			jlFriendsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		}
+		jlFriendsList.addMouseListener(new FriendMultiSelectionListener());
+		
+		
+		
+	}
+	
+	
+	
+	
+	
 	
 	//JList를 기존에 가져온 LinkedHashMap(순서보장) 데이터로 초기화
 	public void addElementToJList(){
@@ -110,6 +139,60 @@ public class FriendsListPanel extends JPanel {
 		public void mouseExited(MouseEvent arg0) {}
 		public void mouseEntered(MouseEvent arg0) {}
 	}
+	
+	//다중 선택 기능 설정 시 클릭 리스너
+	class FriendMultiSelectionListener implements MouseListener{
+
+		public void mouseClicked(MouseEvent e) {
+			if (e.getClickCount() == 1) {
+				List<FriendsVO> voList = jlFriendsList.getSelectedValuesList();
+			if(selectedFriends.size()< voList.size()){
+				for (FriendsVO vo : voList) {
+					if (!selectedFriends.containsKey(vo.getUserID())) {
+						selectedFriends.put(vo.getUserID(), vo);
+					}
+				}
+			}else if(selectedFriends.size()> voList.size()){
+				Iterator<Entry<String, FriendsVO>> haveit = selectedFriends.entrySet().iterator();
+				String removeTarget = null;
+				while(haveit.hasNext()){
+				FriendsVO f =	(FriendsVO) haveit.next().getValue();
+					if(!voList.contains(f)){
+						removeTarget = f.getUserID();
+					}
+				}
+				selectedFriends.remove(removeTarget);
+			}
+			}
+		}
+		
+		public void mousePressed(MouseEvent e) {}
+		public void mouseReleased(MouseEvent e) {}
+		public void mouseEntered(MouseEvent e) {
+			try {
+				clickRobot = new Robot();
+			} catch (AWTException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			clickRobot.keyPress(KeyEvent.VK_CONTROL);
+		}
+		public void mouseExited(MouseEvent e) {
+			try {
+				clickRobot = new Robot();
+			} catch (AWTException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			clickRobot.keyRelease(KeyEvent.VK_CONTROL);
+			
+		}
+		
+	}
+	
+	
+	
+	
 	
 	//TextField 검색 키보드 리스너(입력될때마다 리스너 실행)
 	class FriendSearchKeyListener implements KeyListener {
