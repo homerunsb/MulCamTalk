@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import javax.swing.BoxLayout;
@@ -26,6 +27,8 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import com.mc.mctalk.chatserver.ChattingController;
+import com.mc.mctalk.dao.ChattingRoomDAO;
 import com.mc.mctalk.vo.UserVO;
 
 public class CreatingChattingRoomPanel extends JFrame {
@@ -124,9 +127,15 @@ public class CreatingChattingRoomPanel extends JFrame {
 		// 버튼 액션 리스너!!!
 		confirmBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				LinkedHashMap<String, UserVO> lastSelected = (LinkedHashMap<String, UserVO>) friendListPannel.selectedFriends;
+				
+				//
+				//
+				
+				
 				Thread chatCreat = new Thread(new Runnable() {
 					public void run() {
-						ChattingFrame cf = new ChattingFrame();
+						ChattingController makeRoom = new ChattingController(MainFrame.getLoginID(), lastSelected);
 					}
 				});
 				chatCreat.start();
