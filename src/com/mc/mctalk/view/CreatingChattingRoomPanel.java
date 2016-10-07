@@ -29,12 +29,9 @@ import javax.swing.border.EmptyBorder;
 import com.mc.mctalk.vo.FriendsVO;
 
 public class CreatingChattingRoomPanel extends JFrame {
-	
-
 	private JPanel topPanel = new JPanel();
 	private JPanel middlePanel = new JPanel();
 	private JPanel bottomPanel = new JPanel();
- 
 	private JScrollPane middleChoiceFriendListScrollPanel = new JScrollPane();
 	private JLabel middleChoiceFriendListLabel = new JLabel();
 	private JTextField middleSerchFriendListTextField = new JTextField(10);
@@ -42,22 +39,16 @@ public class CreatingChattingRoomPanel extends JFrame {
 	private JPanel middleSelectedFriendListPanel = new JPanel();
 	private FriendsListPanel friendListPannel = new FriendsListPanel(true);
 	private JList<FriendsVO> selectedList;
-
 	private JButton closeBtn = new JButton("X"); // 나중에 이미지로 주면 이쁠것같다.
 	private JButton confirmBtn = new JButton("확인");
 	private JButton cancelBtn = new JButton("취소");
-
 	private DefaultListModel<FriendsVO> listmodel = new DefaultListModel<>();
 	private JLabel topPanelLabel = new JLabel();
 	private JLabel topCountLabel = new JLabel("" + count);
 	private static int count = 0;
 	private static boolean exitCheck = false;
-
 	private Font grayFont = new Font("dialog", Font.BOLD, 12);
-
 	public CreatingChattingRoomPanel() {
-		// friendListPannel.pSearch.setPreferredSize(new Dimension(150, 30));
-
 		// frame setting
 		this.setBackground(Color.white);
 		this.setSize(520, 430);
@@ -72,7 +63,6 @@ public class CreatingChattingRoomPanel extends JFrame {
 		middlePanel.setBackground(Color.white);
 		bottomPanel.setBackground(Color.white);
 		middleSelectedFriendListPanel.setBackground(Color.white);
-
 		// topPanel setting
 		topPanel.setLayout(new BorderLayout());
 		JPanel panelAdd = new JPanel();
@@ -103,42 +93,18 @@ public class CreatingChattingRoomPanel extends JFrame {
 		middleSelectedFriendListPanel.setPreferredSize(new Dimension(250, 200));
 		// 크기 설정하려면 서치패널에 있는 크기를 필수적으로 줄여주어야 한다....
 		middlePanel.add(middleSelectedFriendListPanel);
-
-		// middleSelectedFriendListPanel.add(selectedList);
-		// listmodel.addElement(null);
 		selectedList = new JList<>(listmodel);
-
 		selectedList.setCellRenderer(new FriendsListCellRenderer());
-
 		middleSelectedFriendListPanel.add(selectedList);
-
 		friendListPannel.jlFriendsList.addMouseListener(new MouseListener() {
-
-			@Override
 			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-
 			}
-
-			@Override
 			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-
 			}
-
-			@Override
 			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-
 			}
-
-			@Override
 			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-
 			}
-
-			@Override
 			public void mouseClicked(MouseEvent e) {
 				listmodel.removeAllElements();
 				Iterator<Entry<String, FriendsVO>> entry = friendListPannel.selectedFriends.entrySet().iterator();
@@ -146,80 +112,55 @@ public class CreatingChattingRoomPanel extends JFrame {
 
 					listmodel.addElement(entry.next().getValue());
 				}
-
 				System.out.println(listmodel.size());
-
 				count = friendListPannel.selectedFriends.size();
 				topCountLabel.setText(count + "");
 				repaint();
-
 			}
 		});
-		//
-
 		// bottomPanel setting
 		bottomPanel.add(confirmBtn);
 		bottomPanel.add(cancelBtn);
-
 		// 버튼 액션 리스너!!!
 		confirmBtn.addActionListener(new ActionListener() {
-
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				Thread chatCreat = new Thread(new Runnable() {
-					
-					@Override
 					public void run() {
 						ChattingFrame cf = new ChattingFrame();
-						
 					}
 				});
 				chatCreat.start();
 				dispose();
-				
-				
 			}
 		});
-
 		cancelBtn.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
 		this.setVisible(true);
-
 	}
-
 	class FriendsListCellRenderer extends DefaultListCellRenderer {
 		public FriendsListCellRenderer() {
 			this.setOpaque(true);
 			this.setIconTextGap(0); // 아이콘과 텍스트의 간격 설정
 		}
-
-		@Override
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
-
 			JLabel comp = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			Border border = comp.getBorder();
 			Border margin = new EmptyBorder(0, 0, 0, 0);
 			comp.setBorder(new CompoundBorder(border, margin));
 			// 받아온 JList의 값을 FriendsVO 객체에 담기
 			FriendsVO vo = (FriendsVO) value;
-
 			// 리턴할 객체에 이미지, 이름과, 상태 메세지 세팅
 			// comp.setIcon(vo.getProfileImage());
 			comp.setText(vo.getUserName());
 			return comp;
 		}
 	}
-
 	// 종료스레드 작성
-
 	public static void main(String[] args) {
 		CreatingChattingRoomPanel c = new CreatingChattingRoomPanel();
-		
 	}
-
 }
