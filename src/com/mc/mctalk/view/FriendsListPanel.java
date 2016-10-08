@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -49,9 +50,7 @@ public class FriendsListPanel extends JPanel {
 	//선택된 친구목록 모음 (맵)
 	Map<String, UserVO> selectedFriends = new LinkedHashMap<>();
 	Robot clickRobot ;
-	
-	
-	
+	RoundedImageMaker imageMaker = new RoundedImageMaker();
 	
 	String loginID = MainFrame.getLoginID();
 	ArrayList<UserVO> alFriendsList;
@@ -91,8 +90,9 @@ public class FriendsListPanel extends JPanel {
 		this.add(pSearch, "North");
 		this.add(scrollPane, "Center");
 	}
+	
 	// 다중선택 여부 생성
-	public FriendsListPanel(boolean hasMultiSelectionFuntion){
+	public FriendsListPanel(boolean hasMultiSelectionFuntion) {
 		this();
 		if (hasMultiSelectionFuntion) {
 			jlFriendsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -101,14 +101,7 @@ public class FriendsListPanel extends JPanel {
 			jlFriendsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
 		jlFriendsList.addMouseListener(new FriendMultiSelectionListener());
-		
-		
-		
 	}
-	
-	
-	
-	
 	
 	
 	//JList를 기존에 가져온 LinkedHashMap(순서보장) 데이터로 초기화
@@ -142,32 +135,29 @@ public class FriendsListPanel extends JPanel {
 	
 	//다중 선택 기능 설정 시 클릭 리스너
 	class FriendMultiSelectionListener implements MouseListener{
-
 		public void mouseClicked(MouseEvent e) {
 			if (e.getClickCount() == 1) {
-				List<UserVO> voList = jlFriendsList.getSelectedValuesList();
-			if(selectedFriends.size()< voList.size()){
-				for (UserVO vo : voList) {
-					if (!selectedFriends.containsKey(vo.getUserID())) {
-						selectedFriends.put(vo.getUserID(), vo);
+					List<UserVO> voList = jlFriendsList.getSelectedValuesList();
+				if(selectedFriends.size()< voList.size()){
+					for (UserVO vo : voList) {
+						if (!selectedFriends.containsKey(vo.getUserID())) {
+							selectedFriends.put(vo.getUserID(), vo);
+						}
 					}
-				}
-			}else if(selectedFriends.size()> voList.size()){
-				Iterator<Entry<String, UserVO>> haveit = selectedFriends.entrySet().iterator();
-				String removeTarget = null;
-				while(haveit.hasNext()){
-				UserVO f =	(UserVO) haveit.next().getValue();
-					if(!voList.contains(f)){
-						removeTarget = f.getUserID();
+				}else if(selectedFriends.size()> voList.size()){
+					Iterator<Entry<String, UserVO>> haveit = selectedFriends.entrySet().iterator();
+					String removeTarget = null;
+					while(haveit.hasNext()){
+					UserVO f =	(UserVO) haveit.next().getValue();
+						if(!voList.contains(f)){
+							removeTarget = f.getUserID();
+						}
 					}
+					selectedFriends.remove(removeTarget);
 				}
-				selectedFriends.remove(removeTarget);
-			}
 			}
 		}
-		
-		public void mousePressed(MouseEvent e) {}
-		public void mouseReleased(MouseEvent e) {}
+
 		public void mouseEntered(MouseEvent e) {
 			try {
 				clickRobot = new Robot();
@@ -177,6 +167,7 @@ public class FriendsListPanel extends JPanel {
 			}
 			clickRobot.keyPress(KeyEvent.VK_CONTROL);
 		}
+		
 		public void mouseExited(MouseEvent e) {
 			try {
 				clickRobot = new Robot();
@@ -185,14 +176,11 @@ public class FriendsListPanel extends JPanel {
 				e1.printStackTrace();
 			}
 			clickRobot.keyRelease(KeyEvent.VK_CONTROL);
-			
 		}
 		
+		public void mousePressed(MouseEvent e) {}
+		public void mouseReleased(MouseEvent e) {}
 	}
-	
-	
-	
-	
 	
 	//TextField 검색 키보드 리스너(입력될때마다 리스너 실행)
 	class FriendSearchKeyListener implements KeyListener {
@@ -265,8 +253,10 @@ public class FriendsListPanel extends JPanel {
 				boolean isSelected, boolean cellHasFocus) {
 			//받아온 JList의 값을 UserVO 객체에 담기
 			UserVO vo = (UserVO) value;
-			//리턴할 객체에 이미지, 이름과, 상태 메세지 세팅
-			lbImgIcon.setIcon(vo.getProfileImage());
+			
+			//리턴할 객체에 둥근 프로필 이미지, 이름과, 상태 메세지 세팅
+			ImageIcon profileImage = imageMaker.getRoundedImage(vo.getUserImgPath(), 70, 70);
+			lbImgIcon.setIcon(profileImage);
 			lbName.setText(vo.getUserName());
 			if(vo.getUserMsg() != null ){
 				lbStatMsg.setText(vo.getUserMsg());
@@ -292,7 +282,7 @@ public class FriendsListPanel extends JPanel {
 		        panelText.setBackground(list.getBackground());
 		        setBackground(list.getBackground());
 		    }
-			
+		    
 			return this;
 		}
 	}
