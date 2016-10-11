@@ -71,7 +71,9 @@ public class FriendsListPanel extends JPanel {
 	}
 	
 	// 다중선택 여부 생성
-	public FriendsListPanel(boolean hasMultiSelectionFuntion) {
+	public FriendsListPanel(boolean hasMultiSelectionFuntion, ChattingClient client) {
+		this.client = client;
+		this.loginID = client.getLoginUserVO().getUserID();
 		initPanel(hasMultiSelectionFuntion);
 		
 		if (hasMultiSelectionFuntion) {

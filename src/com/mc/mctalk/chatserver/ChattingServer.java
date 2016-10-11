@@ -146,10 +146,7 @@ public class ChattingServer {
 				e.printStackTrace();
 			}
 		}//senToClient()
-		
 	}//Class chattingThread
-	
-	
 	
 	public static void main(String[] args) {
 		ChattingServer run = new ChattingServer();

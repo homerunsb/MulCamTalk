@@ -30,8 +30,8 @@ public class ChattingController {
 	}
 	
 	//다중선택시 오버로딩
-	public ChattingController(String loginID, LinkedHashMap<String, UserVO> selectedFriends) {
-		this.loginID = loginID;
+	public ChattingController(ChattingClient client, LinkedHashMap<String, UserVO> selectedFriends) {
+		this.loginID = client.getLoginUserVO().getUserID();
 		this.selectedFriends = selectedFriends;
 		String roomID = make1onNChattingRoom();
 		openChattingRoom(roomID);
