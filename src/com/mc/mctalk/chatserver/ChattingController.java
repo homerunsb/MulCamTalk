@@ -37,6 +37,7 @@ public class ChattingController {
 		openChattingRoom(roomID);
 	}
 	
+	//SQL 수정 필요 그룹 채팅방도 검색됨.
 	//전체적인 클래스 설계 필요. 객체(ChattingRoomVO)로 이동을 해야 좀 더 유연해질 듯.
 	public void hasChattingRoom(){
 		String roomID = dao.searchLastChatRoom(loginID, friendID);

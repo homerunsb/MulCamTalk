@@ -20,7 +20,7 @@ public class ChattingClient {
 	private Socket socket = null;
 //	final private String SERVER_IP= "127.0.0.1";
 	final private String SERVER_IP= "70.12.109.103";
-	final private int SERVER_PORT= 9999;
+	final private int SERVER_PORT= 8888;
 
 	private BufferedWriter bw = null;
 	private BufferedReader br = null;

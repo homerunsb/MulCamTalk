@@ -24,6 +24,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.border.Border;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -91,6 +92,10 @@ public class ChattingFrame extends JFrame {
 		
 		messeageGoButton.addActionListener(new TotalActionListener());
 
+//		messeageGoButton.setBorderPainted(false);
+//		messeageGoButton.setFocusPainted(false);
+//		messeageGoButton.setContentAreaFilled(false);
+		
 		taInPutChatt.addKeyListener(new TotalActionListener());
 		taInPutChatt.setBorder(line);
 		historyChatt.setBorder(line);
@@ -98,24 +103,38 @@ public class ChattingFrame extends JFrame {
 		StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
 		StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
 
-		doc.setParagraphAttributes(0, doc.getLength(), right, false);
-//		doc.setParagraphAttributes(0, doc.getLength(), left, false);
+//		doc.setParagraphAttributes(0, doc.getLength(), right, false);
 
+		//채팅 히스토리 스크롤 컨트롤 관련
+		DefaultCaret caret = (DefaultCaret) historyChatt.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+//		scrollpane1.getVerticalScrollBar().setValue(scrollpane1.getVerticalScrollBar().getMaximum());
+				
+		scrollpane1.setViewportView(historyChatt);
+
+//		JTextArea textArea = new JTextArea();
+//		DefaultCaret caret = (DefaultCaret)textArea.getCaret();
+//		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+//		
+		
 	    StyleConstants.setForeground(right, Color.BLACK);
-	    StyleConstants.setFontSize(right, 18);
+	    StyleConstants.setFontSize(right, 15);
 	    StyleConstants.setBackground(right, Color.YELLOW);
 	    StyleConstants.setSpaceAbove(right, 10);
 	    StyleConstants.setLeftIndent(right, 10);
 	    StyleConstants.setRightIndent(right, 10);
+	    StyleConstants.setFontFamily(right, "Malgun Gothic");
 	    
 	    StyleConstants.setForeground(left, Color.BLACK);
-	    StyleConstants.setFontSize(left, 18);
+	    StyleConstants.setFontSize(left, 15);
 	    StyleConstants.setBackground(left, Color.WHITE);
 	    StyleConstants.setSpaceAbove(left, 10);
 	    StyleConstants.setLeftIndent(left, 10);
 	    StyleConstants.setRightIndent(left, 10);
-	    
-	    StyleConstants.setFontSize(time, 13);
+	    StyleConstants.setFontFamily(left, "Malgun Gothic");
+
+	    StyleConstants.setFontSize(time, 9);
+	    StyleConstants.setFontFamily(time, "Malgun Gothic");
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setVisible(true);
@@ -123,9 +142,9 @@ public class ChattingFrame extends JFrame {
 		client.setChattingGUI(this, roomVO);
 	}
 
-	public static void main(String[] args) {
-		ChattingFrame a = new ChattingFrame();
-	}
+//	public static void main(String[] args) {
+//		ChattingFrame a = new ChattingFrame();
+//	}
 
 	class TotalActionListener implements ActionListener, KeyListener {
 		int conTrollInPut = 0;  // 컨트롤 키값을 저장해놓을 변수
@@ -216,14 +235,20 @@ public class ChattingFrame extends JFrame {
 			isLoginID = true;
 		}
 
+		long currentTime = System.currentTimeMillis();
+		SimpleDateFormat formatter = new SimpleDateFormat("aahh:mm", Locale.KOREA);
+		Date times = new Date(currentTime);
+		String dTime = formatter.format(times);
+		
 		// 로그인 ID 여부에 따라 서식 적용
 		SimpleAttributeSet leftOrRight = new SimpleAttributeSet();
 		int minusLength = 0;
 		int lineBreakCount = lineBreakList.size();
-
+		
 		// 개행 갯수에 따라 시간 붙일 위치(인덱스) 정하기 (오른쪽일 경우)
 		if (isLoginID) { // 나 자신(오른쪽)
 			leftOrRight = right;
+//			dTime = dTime + "\t";
 //			insertedMsg = insertedMsg.split(":")[1]; // 내가 친건 ID 표시 안함
 			// 나 자신일 경우 개행이 있을시 마지막 줄 왼쪽에 시간 붙임
 			if (lineBreakCount > 1) {
@@ -234,13 +259,9 @@ public class ChattingFrame extends JFrame {
 			}
 		} else {// 상대방(왼쪽)
 			leftOrRight = left;
+//			dTime = "\t" + dTime;
 			minusLength = 1; // 0일시 개행이 되버림.
 		}
-		
-		long currentTime = System.currentTimeMillis();
-		SimpleDateFormat formatter = new SimpleDateFormat("aahh:mm", Locale.KOREA);
-		Date times = new Date(currentTime);
-		String dTime = formatter.format(times);
 		
 		try {
 			doc.insertString(doc.getLength(), insertedMsg, leftOrRight); // 메시지 넣기

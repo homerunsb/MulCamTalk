@@ -14,6 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.google.gson.Gson;
 import com.mc.mctalk.vo.ChattingRoomVO;
@@ -21,18 +23,21 @@ import com.mc.mctalk.vo.MessageVO;
 import com.mc.mctalk.vo.UserVO;
 
 public class ChattingServer {
-	final private int SERVER_PORT = 9999;
+	final private int SERVER_PORT = 8888;
 	private ServerSocket serverSocket;
 	private Map<String, ChattingThread> htThreadList; //스레드 맵
 	private Map<String, UserVO> htConnectedUsers; //연결 유저 맵
 	private Map<String, ChattingRoomVO> htRoomVO; //채팅 방 맵
 
-	Gson gson = new Gson();
+	private ExecutorService executorService;
+	private Gson gson = new Gson();
 	private BufferedReader br;
 	private BufferedWriter bw;
 	
 	//서버 생성자
 	public ChattingServer() {
+		executorService = Executors.newCachedThreadPool();
+		
 		htThreadList = new Hashtable<>();
 		htConnectedUsers = new Hashtable<>();
 		htRoomVO = new Hashtable<>();
@@ -59,7 +64,6 @@ public class ChattingServer {
 				UserVO userVO = gson.fromJson(loginUserInfo, UserVO.class);
 				htConnectedUsers.put(userVO.getUserID(), userVO);
 				
-				
 				//새로운 클라이언트 접속하면 새로운 스레드 객체를 소켓을 주고 생성하여 리스트에 추가
 				ChattingThread t = new ChattingThread(br, bw, userVO);
 				htThreadList.put(userVO.getUserID(), t);
@@ -77,7 +81,6 @@ public class ChattingServer {
 		ChattingRoomVO roomVO = messageVO.getRoomVO();
 		String roomID = roomVO.getChattingRoomID();
 		
-		//방ㅇ
 //		htRoomVO.put(roomID, roomVO);
 		
 		ArrayList userList = (ArrayList) roomVO.getChattingRoomUserIDs();
@@ -115,13 +118,13 @@ public class ChattingServer {
 			this.bw = bw;
 			this.userVO = userVO;
 			this.userName = userVO.getUserName();
+			executorService.submit(this);
 		}//생성자
 		
 		@Override
 		public void run() {
 			try {
 //				broadcast("["+userName+"]님이 입장하셨습니다.");
-				
 				while(true){
 					String msg = br.readLine();
 					broadcast(msg);
