@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import com.mc.mctalk.dao.ChattingRoomDAO;
 import com.mc.mctalk.view.ChattingFrame;
+import com.mc.mctalk.vo.ChattingRoomVO;
 import com.mc.mctalk.vo.UserVO;
 
 /** 채팅 프레임 호출
@@ -18,22 +19,23 @@ public class ChattingController {
 	String TAG = "ChattingController : ";
 	String loginID, friendID;
 	ChattingRoomDAO dao = new ChattingRoomDAO();
+	ChattingClient client;
 	LinkedHashMap<String, UserVO> selectedFriends;
-	public ChattingController(String loginID, String friendID) {
-		this.loginID = loginID;
+	
+	public ChattingController(ChattingClient client, String friendID) {
+		this.client = client;
+		this.loginID = client.getLoginUserVO().getUserID();
 		this.friendID = friendID;
 		hasChattingRoom();
 	}
 	
-	//다중선택시 오버로
+	//다중선택시 오버로딩
 	public ChattingController(String loginID, LinkedHashMap<String, UserVO> selectedFriends) {
 		this.loginID = loginID;
 		this.selectedFriends = selectedFriends;
 		String roomID = make1onNChattingRoom();
 		openChattingRoom(roomID);
-		
 	}
-	
 	
 	//전체적인 클래스 설계 필요. 객체(ChattingRoomVO)로 이동을 해야 좀 더 유연해질 듯.
 	public void hasChattingRoom(){
@@ -67,17 +69,15 @@ public class ChattingController {
 			Iterator<Entry<String, UserVO>> entry = selectedFriends.entrySet().iterator();
 			for(int i=0; i<selectedFriends.size();i++){
 				dao.addUserToChattingRoom(roomID, entry.next().getValue().getUserID());
-				
 			}
 		}
 		return roomID;
 	}
 	
-	
-	
 	public void openChattingRoom(String roomID){
+		ChattingRoomVO roomVO = dao.getChatRoomVO(roomID);
 		//연결시 대화 상대들을 인자로 받게끔 설정 필요
 		//여기서부터 thread 및 소켓 할당 필요할 듯.
-		ChattingFrame cf = new ChattingFrame();
+		ChattingFrame cf = new ChattingFrame(client, roomVO);
 	}
 }

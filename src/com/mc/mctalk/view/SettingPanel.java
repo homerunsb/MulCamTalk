@@ -13,7 +13,13 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
+
+/*
+ * 담당자 : 정대용
+ * 수정 필요 사항 : 객체 크기 조절, 기능 구현
+ */
 
 public class SettingPanel extends JPanel {
 private JPanel mainPanel = new JPanel();
@@ -38,14 +44,15 @@ private JPanel mainPanel = new JPanel();
 	private EtchedBorder eBorder = new EtchedBorder(EtchedBorder.RAISED);
 	
 	public SettingPanel()
-	{
-//		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-		
-		accountPanel.add(accountLabel);
+	{		
+		//계정 패널(서브패널)
+		accountPanel.add(accountLabel, BorderLayout.CENTER);
 		accountPanel.add(logoutBtn);
+		logoutBtn.setPreferredSize(new Dimension(100, 50));
 		accountPanel.setBorder(eBorder);
 		mainPanel.add(accountPanel);
 		 
+		//프로필 패널(서브패널)
 		profilePanel.add(profileLabel);
 		profileInPanel.add(nameChangeBtn);
 		profileInPanel.add(messageChangeBtn);
@@ -53,6 +60,7 @@ private JPanel mainPanel = new JPanel();
 		profilePanel.setBorder(eBorder);
 		mainPanel.add(profilePanel);
 		
+		//알림패널(서브패널)
 		alramPanel.add(alramLabel);
 		alramInPanel.add(alramOnBtn);
 		alramInPanel.add(alramOffBtn);
@@ -61,16 +69,20 @@ private JPanel mainPanel = new JPanel();
 		mainPanel.add(alramPanel);
 		
 		add(mainPanel);
-		accountPanel.setLayout(new GridLayout());
-		profilePanel.setLayout(new GridLayout());
-		profileInPanel.setLayout(new GridLayout(2, 1));
-		alramPanel.setLayout(new GridLayout());
-		alramInPanel.setLayout(new GridLayout(2, 1));
-		mainPanel.setLayout(new GridLayout(3, 1));
 		
-		accountPanel.setBackground(Color.WHITE);
-		profilePanel.setBackground(Color.WHITE);
-		alramPanel.setBackground(Color.WHITE);
+		//패널크기 설정
+		mainPanel.setPreferredSize(new Dimension(380, 550));
+		accountPanel.setPreferredSize(new Dimension(360, 100));
+		profilePanel.setPreferredSize(new Dimension(360, 100));
+		alramPanel.setPreferredSize(new Dimension(360, 100));
+		
+		//패널 레이아웃 세팅
+		accountPanel.setLayout(new GridLayout(1, 2, 5, 5));
+		profilePanel.setLayout(new GridLayout(1, 2, 5, 5));
+		profileInPanel.setLayout(new GridLayout(2, 1, 5, 5));
+		alramPanel.setLayout(new GridLayout(1, 2, 5, 5));
+		alramInPanel.setLayout(new GridLayout(2, 1, 5, 5));
+//		mainPanel.setLayout(new GridLayout(3, 1));
 		
 		setSize(380,550);
 		setVisible(true);

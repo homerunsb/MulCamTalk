@@ -27,6 +27,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.chatserver.ChattingController;
 import com.mc.mctalk.dao.ChattingRoomDAO;
 import com.mc.mctalk.vo.UserVO;
@@ -51,7 +52,7 @@ public class CreatingChattingRoomPanel extends JFrame {
 	private static int count = 0;
 	private static boolean exitCheck = false;
 	private Font grayFont = new Font("dialog", Font.BOLD, 12);
-	public CreatingChattingRoomPanel() {
+	public CreatingChattingRoomPanel(ChattingClient client) {
 		// frame setting
 		this.setBackground(Color.white);
 		this.setSize(520, 430);
@@ -88,9 +89,9 @@ public class CreatingChattingRoomPanel extends JFrame {
 		// middlePanel setting
 		middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.X_AXIS));
 		friendListPannel.setPreferredSize(new Dimension(100, 100));
-		friendListPannel.tfSearch.setPreferredSize(new Dimension(230, 15));
-		friendListPannel.pSearch.setBackground(Color.white);
-		friendListPannel.tfSearch.setBackground(Color.white);
+		friendListPannel.getTfSearch().setPreferredSize(new Dimension(230, 15));
+		friendListPannel.getpSearch().setBackground(Color.white);
+		friendListPannel.getTfSearch().setBackground(Color.white);
 		middlePanel.add(friendListPannel);
 		// middlePanel.add(middleChoiceFriendListScrollPanel);
 		middleSelectedFriendListPanel.setPreferredSize(new Dimension(250, 200));
@@ -99,7 +100,7 @@ public class CreatingChattingRoomPanel extends JFrame {
 		selectedList = new JList<>(listmodel);
 		selectedList.setCellRenderer(new FriendsListCellRenderer());
 		middleSelectedFriendListPanel.add(selectedList);
-		friendListPannel.jlFriendsList.addMouseListener(new MouseListener() {
+		friendListPannel.getJlFriendsList().addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
 			}
 			public void mousePressed(MouseEvent e) {
@@ -110,13 +111,13 @@ public class CreatingChattingRoomPanel extends JFrame {
 			}
 			public void mouseClicked(MouseEvent e) {
 				listmodel.removeAllElements();
-				Iterator<Entry<String, UserVO>> entry = friendListPannel.selectedFriends.entrySet().iterator();
-				for (int i = 0; i < friendListPannel.selectedFriends.size(); i++) {
+				Iterator<Entry<String, UserVO>> entry = friendListPannel.getSelectedFriends().entrySet().iterator();
+				for (int i = 0; i < friendListPannel.getSelectedFriends().size(); i++) {
 
 					listmodel.addElement(entry.next().getValue());
 				}
 				System.out.println(listmodel.size());
-				count = friendListPannel.selectedFriends.size();
+				count = friendListPannel.getSelectedFriends().size();
 				topCountLabel.setText(count + "");
 				repaint();
 			}
@@ -127,7 +128,7 @@ public class CreatingChattingRoomPanel extends JFrame {
 		// 버튼 액션 리스너!!!
 		confirmBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				LinkedHashMap<String, UserVO> lastSelected = (LinkedHashMap<String, UserVO>) friendListPannel.selectedFriends;
+				LinkedHashMap<String, UserVO> lastSelected = (LinkedHashMap<String, UserVO>) friendListPannel.getSelectedFriends();
 				
 				//
 				//
@@ -135,7 +136,7 @@ public class CreatingChattingRoomPanel extends JFrame {
 				
 				Thread chatCreat = new Thread(new Runnable() {
 					public void run() {
-						ChattingController makeRoom = new ChattingController(MainFrame.getLoginID(), lastSelected);
+						ChattingController makeRoom = new ChattingController("test", lastSelected);
 					}
 				});
 				chatCreat.start();
@@ -170,6 +171,6 @@ public class CreatingChattingRoomPanel extends JFrame {
 	}
 	// 종료스레드 작성
 	public static void main(String[] args) {
-		CreatingChattingRoomPanel c = new CreatingChattingRoomPanel();
+		CreatingChattingRoomPanel c = new CreatingChattingRoomPanel(null);
 	}
 }
