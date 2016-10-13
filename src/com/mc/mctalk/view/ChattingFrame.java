@@ -7,6 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.text.SimpleDateFormat;
@@ -132,12 +135,14 @@ public class ChattingFrame extends JFrame {
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setVisible(true);
+		setResizable(false);
 		
 		client.setChattingGUI(this, roomVO);
 		
 		
 		messeageGoButton.addActionListener(new TotalActionListener());
 		taInPutChatt.addKeyListener(new TotalActionListener());
+		this.addWindowListener(new CloseWindowListener());
 
 	}
 
@@ -185,12 +190,7 @@ public class ChattingFrame extends JFrame {
 				conTrollInPut = 0;			//엔터도 아닐경우 키값만 초기화
 				enterInPut = 0;
 			}
-
 		}
-
-		public void keyTyped(KeyEvent e) {
-		}
-
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if (e.getKeyCode() == KeyEvent.VK_CONTROL) {   //컨트롤을 눌렀을시conTrollInPut 변수에 키값 저장
@@ -199,6 +199,17 @@ public class ChattingFrame extends JFrame {
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {		//엔터를 눌렀을시 enterInPut 변수에 키값 저장
 				enterInPut = e.getKeyCode();
 			}
+		}
+		public void keyTyped(KeyEvent e) {}
+	}
+	
+	//채팅 프레임 닫기 이벤트
+	public class CloseWindowListener extends WindowAdapter{
+		@Override
+		public void windowClosing(WindowEvent e) {
+			System.out.println(TAG + "CloseWindowListener.windowClosing()" );
+			//채팅 프레임 닫을때 중복으로 같은 방을 열기위해 담아 두었던 맵에 해당 UI 삭제
+			client.removeHtChattingGUI(roomID);
 		}
 	}
 	

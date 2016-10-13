@@ -78,6 +78,13 @@ public class ChattingController {
 	public void openChattingRoom(String roomID){
 		System.out.println(TAG + "openChattingRoom()");
 		ChattingRoomVO roomVO = dao.getChatRoomVO(roomID);
-		ChattingFrame cf = new ChattingFrame(client, roomVO);
+		ChattingFrame openedChattingGUI = client.getHtChattingGUI(roomID);
+		
+		if(openedChattingGUI == null){
+			ChattingFrame cf = new ChattingFrame(client, roomVO);
+		}else{
+			openedChattingGUI.requestFocus();
+			openedChattingGUI.setState(java.awt.Frame.NORMAL);
+		}
 	}
 }

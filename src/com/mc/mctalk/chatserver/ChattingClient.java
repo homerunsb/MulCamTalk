@@ -138,8 +138,14 @@ public class ChattingClient {
 		}
 	}
 	
-	
 	public UserVO getLoginUserVO() {
 		return loginUserVO;
+	}
+	public ChattingFrame getHtChattingGUI(String roomID) {
+		ChattingFrame returnCf = htChattingGUI.get(roomID);
+		return returnCf;
+	}
+	public void removeHtChattingGUI(String roomID) {
+		htChattingGUI.remove(roomID);
 	}
 }
