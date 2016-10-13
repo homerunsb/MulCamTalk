@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import com.mc.mctalk.vo.ChattingRoomVO;
+import com.mc.mctalk.vo.MessageVO;
 import com.mc.mctalk.vo.UserVO;
 import com.mysql.jdbc.Statement;
 
@@ -46,6 +47,66 @@ public class ChattingRoomDAO {
 															 + "from chat_room_users "
 															 + "where room_id = ?) ";	 
 								
+	
+	private String insertMessageToDBSQL = "INSERT INTO messages (room_id,msg_sent_user_id,"
+			+ "msg_content,msg_sent_time) values (? ,? ,? ,?)";
+	private String insertDisconnClientSQL = "INSERT INTO disconn_client (msg_id,discon_client_id) "
+			+ "vlaues (?,?)"; // 영태가 작업중...
+	
+	
+	
+	public void insertDiconnClient(String msg_id, String disconnClient){
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		conn = JDBCUtil.getConnection();
+		try {
+			stmt = conn.prepareStatement(insertDisconnClientSQL);
+			stmt.setString(1, msg_id);
+			stmt.setString(2, disconnClient);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			JDBCUtil.close(stmt, conn);
+		}
+	}
+	
+	public String insertMessageToDB(MessageVO msg){
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rst = null;
+		String messageID = null;
+		conn = JDBCUtil.getConnection();
+		try {
+			stmt = conn.prepareStatement(insertMessageToDBSQL, Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, msg.getRoomVO().getChattingRoomID());
+			stmt.setString(2, msg.getSendUserID());
+			stmt.setString(3, msg.getMessage());
+			stmt.setString(4, msg.getSendTime());
+			int cnt = stmt.executeUpdate();
+			if(cnt>0){
+				rst = stmt.getGeneratedKeys();
+				if(rst.next()){
+					System.out.println("Message Insert Success");
+					messageID = rst.getString(1);
+					System.out.println("메세지 ID  : " + messageID);
+				}
+				
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			JDBCUtil.close(stmt, conn);
+			return messageID;
+		}
+		
+	}
+	
+	
+	
 	
 	public String searchLastChatRoom(String loginID, String friendID){
 		System.out.println(TAG + "searchLastChatRoom()");

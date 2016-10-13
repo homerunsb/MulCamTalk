@@ -32,6 +32,7 @@ import javax.swing.border.LineBorder;
 
 import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.chatserver.ChattingController;
+import com.mc.mctalk.view.uiitem.CustomJScrollPane;
 import com.mc.mctalk.view.uiitem.RoundedImageMaker;
 import com.mc.mctalk.vo.UserVO;
 
@@ -40,6 +41,7 @@ public class CreatingChattingRoomPanel extends JFrame {
 	private JPanel topPanel = new JPanel();
 	private JPanel middlePanel = new JPanel();
 	private JPanel bottomPanel = new JPanel();
+	private CustomJScrollPane ChoiceFriendListScrollPanel ;
 	private JScrollPane middleChoiceFriendListScrollPanel = new JScrollPane();
 	private JLabel middleChoiceFriendListLabel = new JLabel();
 	private JTextField middleSerchFriendListTextField = new JTextField(10);
@@ -90,7 +92,7 @@ public class CreatingChattingRoomPanel extends JFrame {
 
 		// middlePanel setting
 		middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.X_AXIS));
-		friendListPannel.setPreferredSize(new Dimension(100, 100));
+		friendListPannel.setPreferredSize(new Dimension(250, 200));
 		friendListPannel.getTfSearch().setPreferredSize(new Dimension(230, 15));
 		friendListPannel.getpSearch().setBackground(backGraundColor);
 		friendListPannel.getTfSearch().setBackground(backGraundColor);
@@ -98,10 +100,14 @@ public class CreatingChattingRoomPanel extends JFrame {
 		// middlePanel.add(middleChoiceFriendListScrollPanel);
 		middleSelectedFriendListPanel.setPreferredSize(new Dimension(220, 200));
 		// 크기 설정하려면 서치패널에 있는 크기를 필수적으로 줄여주어야 한다....
-		middlePanel.add(middleSelectedFriendListPanel);
 		selectedList = new JList<>(listmodel);
 		selectedList.setCellRenderer(new FriendsListCellRenderer());
-		middleSelectedFriendListPanel.add(selectedList);
+		ChoiceFriendListScrollPanel = new CustomJScrollPane(selectedList, CustomJScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				CustomJScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		ChoiceFriendListScrollPanel.setBorder(null);
+		ChoiceFriendListScrollPanel.setPreferredSize(new Dimension(220, 200));
+		middlePanel.add(ChoiceFriendListScrollPanel);
+		friendListPannel.getpSearch().getpSearchOuter().setBackground(backGraundColor);
 		friendListPannel.getJlFriendsList().addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
 			}
@@ -194,8 +200,11 @@ public class CreatingChattingRoomPanel extends JFrame {
 			totalLabel.setBorder(BorderFactory.createEmptyBorder(0, 38, 0, 0));
 			totalLabel.setPreferredSize(new Dimension(200, 45));
 			totalLabel.add(lbImgIcon, BorderLayout.WEST);
-			totalLabel.add(panelText, BorderLayout.CENTER);
-			totalLabel.add(lbCloseBtn, BorderLayout.EAST);
+			JLabel pluslabel = new JLabel();
+			totalLabel.add(pluslabel, BorderLayout.CENTER);
+			pluslabel.setLayout(new BorderLayout());
+			pluslabel.add(panelText, BorderLayout.WEST);
+			pluslabel.add(lbCloseBtn, BorderLayout.CENTER);
 			totalLabel.setIcon(modelIcon);
 			lbImgIcon.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
 		}

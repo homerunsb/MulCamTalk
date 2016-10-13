@@ -9,18 +9,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 
 import com.google.gson.Gson;
+import com.mc.mctalk.dao.ChattingRoomDAO;
 import com.mc.mctalk.vo.ChattingRoomVO;
 import com.mc.mctalk.vo.MessageVO;
 import com.mc.mctalk.vo.UserVO;
@@ -32,7 +26,8 @@ public class ChattingServer {
 	private Map<String, ChattingThread> htThreadList; //스레드 맵
 	private Map<String, UserVO> htConnectedUsers; //연결 유저 맵
 	private Map<String, ChattingRoomVO> htRoomVO; //채팅 방 맵
-
+	private ChattingRoomDAO chatdao = new ChattingRoomDAO();
+	private String disconnClient = null;
 	private ExecutorService executorService;
 	private Gson gson = new Gson();
 	private BufferedReader br;
@@ -90,6 +85,8 @@ public class ChattingServer {
 		MessageVO messageVO = gson.fromJson(msg, MessageVO.class);
 		ChattingRoomVO roomVO = messageVO.getRoomVO();
 		String roomID = roomVO.getChattingRoomID();
+		// 1.보내기 전에 데이터 베이스에 메세지 정보를 넣는다!!! 메세지 아이디값 반환 
+				String msgID = chatdao.insertMessageToDB(messageVO);
 		
 //		htRoomVO.put(roomID, roomVO);
 		ArrayList userList = null;
@@ -106,7 +103,10 @@ public class ChattingServer {
 					htThreadList.get(userList.get(i)).sendToClient(msg);
 				}catch (NullPointerException e){
 					//접속한 유저가 아닐 경우
-					System.out.println("유저접속X DB로 메시지 전송 필요");
+					System.out.println("유저접속X DB로 메시지 전송 필 요");
+					//접속한 유저가 아닐 경우
+					disconnClient = (String) userList.get(i);
+					chatdao.insertDiconnClient(msgID, disconnClient);
 					e.printStackTrace();
 //					htThreadList.get(userList.get(i)).sendToClient(msg);
 				}

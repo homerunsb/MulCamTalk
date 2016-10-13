@@ -15,6 +15,13 @@ import org.jdesktop.swingx.prompt.PromptSupport;
 
 public class SearchPanel extends JPanel{
 	private JPanel pSearchInner, pSearchOuter;
+	public JPanel getpSearchOuter() {
+		return pSearchOuter;
+	}
+
+	public void setpSearchOuter(JPanel pSearchOuter) {
+		this.pSearchOuter = pSearchOuter;
+	}
 	private JTextField tfSearch;
 	private JLabel jlSearch;
 	
