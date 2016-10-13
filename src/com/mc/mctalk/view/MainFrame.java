@@ -25,6 +25,7 @@ public class MainFrame extends JFrame {
 	private FriendsListPanel pFriendsList;
 	private JPanel pChattingList;
 	private SettingPanel pSetting;
+	private ChattingClient client;
 	final private String FRAME_TITLE = "MulCamTalk";
 	final private int FRAME_WIDTH = 380, FRAME_HEIGHT = 600;
 	final private int MENU_WIDTH = 380, MENU_HEIGHT = 50;
@@ -32,6 +33,7 @@ public class MainFrame extends JFrame {
 
 	public MainFrame(ChattingClient client) {
 		System.out.println(TAG + "MainFrame()");
+		this.client = client;
 		loginID = client.getLoginUserVO().getUserID();
 		pCover = new JPanel();
 		pMainMenu = new MainMenuPanel(this, client);
@@ -71,7 +73,7 @@ public class MainFrame extends JFrame {
 	public void changePanel(String panelName){
 		JPanel selectedPanel = null;
 		switch (panelName) {
-			case "friendsList": selectedPanel = pFriendsList; break;
+			case "friendsList": selectedPanel = pFriendsList = new FriendsListPanel(client); break;
 			case "chattingList": selectedPanel = pChattingList; break;
 			case "setting": selectedPanel = pSetting; break;
 		}
