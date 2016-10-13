@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
@@ -100,15 +101,20 @@ public class ChattingServer {
 			for (int i = 0; i < userList.size(); i++) {
 //				System.out.println("받은 방 유저 리스트 : " + userList.get(i));
 				try{
+					System.out.println(userList.get(i));
 					htThreadList.get(userList.get(i)).sendToClient(msg);
-				}catch (NullPointerException e){
-					//접속한 유저가 아닐 경우
-					System.out.println("유저접속X DB로 메시지 전송 필 요");
+				}catch (SocketException e){
+					System.out.println("SocketException");
+					e.printStackTrace();
+				} catch (IOException e) {
+					System.out.println("IOException");
+					e.printStackTrace();
+				} catch (NullPointerException e){
+					System.out.println("NullPointerException");
 					//접속한 유저가 아닐 경우
 					disconnClient = (String) userList.get(i);
 					chatdao.insertDiconnClient(msgID, disconnClient);
 					e.printStackTrace();
-//					htThreadList.get(userList.get(i)).sendToClient(msg);
 				}
 			}
 		}
@@ -155,15 +161,13 @@ public class ChattingServer {
 		}//run()
 
 		//현재 쓰레드가 담당하는 클라이언트에게 메시지 보내기
-		public void sendToClient(String msg){
+		public void sendToClient(String msg) throws IOException{
 			System.out.println(TAG + "sendToClient()");
 
-			try{
+			
 				bw.write(msg+"\n");
 				bw.flush();
-			}catch(IOException e){
-				e.printStackTrace();
-			}
+			
 		}//senToClient()
 	}//Class chattingThread
 	

@@ -50,8 +50,8 @@ public class ChattingRoomDAO {
 	
 	private String insertMessageToDBSQL = "INSERT INTO messages (room_id,msg_sent_user_id,"
 			+ "msg_content,msg_sent_time) values (? ,? ,? ,?)";
-	private String insertDisconnClientSQL = "INSERT INTO disconn_client (msg_id,discon_client_id) "
-			+ "vlaues (?,?)"; // 영태가 작업중...
+	private String insertDisconnClientSQL = "INSERT INTO disconn_client (msg_id,disconn_client_id) "
+			+ "values (?,?)"; // 영태가 작업중...
 	
 	
 	
