@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -33,7 +34,6 @@ public class LoginFrame extends JFrame {
 	private JPanel logoPanel = new JPanel();
 
 	public LoginFrame() {
-
 		setLayout(null);
 
 		ImageIcon m = new ImageIcon("images/logo.png");
@@ -84,6 +84,7 @@ public class LoginFrame extends JFrame {
 				
 				if (vo != null) {	
 					MainFrame mainFrame = new MainFrame(client);
+					dispose(); //제대로 종료되게 변경 필요
 				}
 
 			} 

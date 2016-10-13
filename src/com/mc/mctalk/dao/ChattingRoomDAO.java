@@ -16,11 +16,12 @@ import com.mysql.jdbc.Statement;
 public class ChattingRoomDAO {
 	private final String TAG = "ChattingRoomDAO : ";
 	//쿼리 수정 필요. 그룹방에 같이 들어있는 경우도 검색됨.
-	private String searchLastChatRoomSQL = "select x.room_id "
-															+ "from chat_rooms x, ("
-															+ "	select me.room_id "
-															+ "	from "
-															+ "		(select room_id "
+	private String searchLastChatRoomSQL =  "SELECT room_id "
+															+ "FROM chat_room_users "
+															+ "WHERE room_id in( "
+															+ "	select "
+															+ "	me.room_id "
+															+ "	from( select room_id "
 															+ "		from chat_room_users cru "
 															+ "		where cru_left_time is null "
 															+ "		and user_id = ? "
@@ -30,8 +31,9 @@ public class ChattingRoomDAO {
 															+ "		where cru_left_time is null "
 															+ "		and user_id = ? "
 															+ "		)other "
-															+ "	where me.room_id = other.room_id )y "
-															+ "where x.room_id = y.room_id";	
+															+ "	where me.room_id = other.room_id ) "
+															+ "GROUP BY room_id "
+															+ "HAVING count(room_id) = 2 ";
 	private String make1on1ChattingRoomSQL = "insert into chat_rooms "
 																+ "(room_created_time, room_name) "
 																+ "values(now(), ?)";

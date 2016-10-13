@@ -36,6 +36,7 @@ import com.mc.mctalk.vo.ChattingRoomVO;
 import com.mc.mctalk.vo.MessageVO;
 
 public class ChattingFrame extends JFrame {
+	String TAG = "ChattingFrame : ";
 	Gson gson = new Gson();
 	ChattingClient client;
 	String loginID, roomID;
@@ -60,11 +61,12 @@ public class ChattingFrame extends JFrame {
 	private BufferedReader br;
 	private BufferedWriter bw;
 	
-	public ChattingFrame(){}
 	public ChattingFrame(ChattingClient client, ChattingRoomVO roomVO) {
+		System.out.println(TAG + "ChattingFrame()");
 		this.client = client;
 		this.loginID = client.getLoginUserVO().getUserID();
 		this.roomID = roomVO.getChattingRoomID();
+		System.out.println(client+"\n"+loginID+"\n" + roomID+"\n");
 		
 		setSize(380, 550);
 		setTitle(roomVO.getChattingRoomName());
@@ -90,13 +92,11 @@ public class ChattingFrame extends JFrame {
 		southpanel.add(scrollpane);
 		southpanel.add(messeageGoButton);
 		
-		messeageGoButton.addActionListener(new TotalActionListener());
 
 //		messeageGoButton.setBorderPainted(false);
 //		messeageGoButton.setFocusPainted(false);
 //		messeageGoButton.setContentAreaFilled(false);
-		
-		taInPutChatt.addKeyListener(new TotalActionListener());
+
 		taInPutChatt.setBorder(line);
 		historyChatt.setBorder(line);
 		scrollpane1.setBorder(line);
@@ -108,15 +108,9 @@ public class ChattingFrame extends JFrame {
 		//채팅 히스토리 스크롤 컨트롤 관련
 		DefaultCaret caret = (DefaultCaret) historyChatt.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-//		scrollpane1.getVerticalScrollBar().setValue(scrollpane1.getVerticalScrollBar().getMaximum());
+		scrollpane1.getVerticalScrollBar().setValue(scrollpane1.getVerticalScrollBar().getMaximum());
+//		scrollpane1.setViewportView(historyChatt);
 				
-		scrollpane1.setViewportView(historyChatt);
-
-//		JTextArea textArea = new JTextArea();
-//		DefaultCaret caret = (DefaultCaret)textArea.getCaret();
-//		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-//		
-		
 	    StyleConstants.setForeground(right, Color.BLACK);
 	    StyleConstants.setFontSize(right, 15);
 	    StyleConstants.setBackground(right, Color.YELLOW);
@@ -133,13 +127,18 @@ public class ChattingFrame extends JFrame {
 	    StyleConstants.setRightIndent(left, 10);
 	    StyleConstants.setFontFamily(left, "Malgun Gothic");
 
-	    StyleConstants.setFontSize(time, 9);
+	    StyleConstants.setFontSize(time, 10);
 	    StyleConstants.setFontFamily(time, "Malgun Gothic");
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setVisible(true);
 		
 		client.setChattingGUI(this, roomVO);
+		
+		
+		messeageGoButton.addActionListener(new TotalActionListener());
+		taInPutChatt.addKeyListener(new TotalActionListener());
+
 	}
 
 //	public static void main(String[] args) {
@@ -248,7 +247,7 @@ public class ChattingFrame extends JFrame {
 		// 개행 갯수에 따라 시간 붙일 위치(인덱스) 정하기 (오른쪽일 경우)
 		if (isLoginID) { // 나 자신(오른쪽)
 			leftOrRight = right;
-//			dTime = dTime + "\t";
+			dTime = dTime + "  ";
 //			insertedMsg = insertedMsg.split(":")[1]; // 내가 친건 ID 표시 안함
 			// 나 자신일 경우 개행이 있을시 마지막 줄 왼쪽에 시간 붙임
 			if (lineBreakCount > 1) {
@@ -259,7 +258,7 @@ public class ChattingFrame extends JFrame {
 			}
 		} else {// 상대방(왼쪽)
 			leftOrRight = left;
-//			dTime = "\t" + dTime;
+			dTime = "  " + dTime;
 			minusLength = 1; // 0일시 개행이 되버림.
 		}
 		
@@ -273,9 +272,7 @@ public class ChattingFrame extends JFrame {
 
 		taInPutChatt.setText(""); // 채팅입력창 초기화
 		
-		//문제점 : 컨트롤 엔터를 눌러 개행을 입력시 그때마다 아이디와 시간이 붙어버림.
-		
-		//추가사항
+		//추가할 사항
 		//공지(입장 퇴장 할때 메시지) 가운데로 폰트 따로 지정해서 출력 필요
 		//대화 폰트 크기 조절 필요
 		//버튼 변경 및 입력창 높이 버튼이랑 맞춰야함

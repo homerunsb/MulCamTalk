@@ -14,8 +14,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 import com.google.gson.Gson;
 import com.mc.mctalk.vo.ChattingRoomVO;
@@ -23,6 +26,7 @@ import com.mc.mctalk.vo.MessageVO;
 import com.mc.mctalk.vo.UserVO;
 
 public class ChattingServer {
+	private final String TAG = "ChattingServer : ";
 	final private int SERVER_PORT = 8888;
 	private ServerSocket serverSocket;
 	private Map<String, ChattingThread> htThreadList; //스레드 맵
@@ -36,13 +40,15 @@ public class ChattingServer {
 	
 	//서버 생성자
 	public ChattingServer() {
-		executorService = Executors.newCachedThreadPool();
+//		executorService = Executors.newCachedThreadPool();
 		
 		htThreadList = new Hashtable<>();
 		htConnectedUsers = new Hashtable<>();
 		htRoomVO = new Hashtable<>();
 		try {
 			serverSocket = new ServerSocket(SERVER_PORT);
+			executorService = Executors.newCachedThreadPool();
+
 			while(true){
 				System.out.println("[서버] 클라이언트 연결 대기중...");
 				Socket socket = serverSocket.accept();
@@ -67,8 +73,11 @@ public class ChattingServer {
 				//새로운 클라이언트 접속하면 새로운 스레드 객체를 소켓을 주고 생성하여 리스트에 추가
 				ChattingThread t = new ChattingThread(br, bw, userVO);
 				htThreadList.put(userVO.getUserID(), t);
-				System.out.println("[서버]접속한 사용자 수 : " + htConnectedUsers.size());
-				t.start();
+
+				System.out.println("[서버] 생성된 스레드 수 : " + htThreadList.size());
+				System.out.println("[서버] 접속한 사용자 수 : " + htConnectedUsers.size());
+				
+				executorService.submit(t);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -76,19 +85,23 @@ public class ChattingServer {
 	}
 	
 	public void broadcast(String msg){
+		System.out.println(TAG + "broadcast()");
 		//받은 메시지 JSON을 파싱하여 메시지의 발송 룸번호를 파악
 		MessageVO messageVO = gson.fromJson(msg, MessageVO.class);
 		ChattingRoomVO roomVO = messageVO.getRoomVO();
 		String roomID = roomVO.getChattingRoomID();
 		
 //		htRoomVO.put(roomID, roomVO);
+		ArrayList userList = null;
 		
-		ArrayList userList = (ArrayList) roomVO.getChattingRoomUserIDs();
-		System.out.println("서버 받은 ArrayList : " + userList.size());
-
+		if(roomVO!=null){
+			userList = (ArrayList) roomVO.getChattingRoomUserIDs();
+//			System.out.println("서버 받은 ArrayList : " + userList.size());
+		}
+		
 		if(userList.size()>0){
 			for (int i = 0; i < userList.size(); i++) {
-				System.out.println("받은 방 유저 리스트 : " + userList.get(i));
+//				System.out.println("받은 방 유저 리스트 : " + userList.get(i));
 				try{
 					htThreadList.get(userList.get(i)).sendToClient(msg);
 				}catch (NullPointerException e){
@@ -108,21 +121,25 @@ public class ChattingServer {
 	
 	//하나의 클라이언트가 접속했을 때 각 클라를 담당할 쓰레드 클래스
 	class ChattingThread extends Thread{
+		private String TAG = "ChattingThread : ";
+
 		private UserVO userVO;
 		private String userName;
 		private BufferedReader br;
 		private BufferedWriter bw;
 		
-		ChattingThread(BufferedReader br, BufferedWriter bw, UserVO userVO){
+		public ChattingThread(BufferedReader br, BufferedWriter bw, UserVO userVO){
+			System.out.println(TAG + "ChattingThread()");
 			this.br = br;
 			this.bw = bw;
 			this.userVO = userVO;
 			this.userName = userVO.getUserName();
-			executorService.submit(this);
 		}//생성자
 		
 		@Override
 		public void run() {
+			System.out.println(TAG + "run()");
+
 			try {
 //				broadcast("["+userName+"]님이 입장하셨습니다.");
 				while(true){
@@ -136,9 +153,11 @@ public class ChattingServer {
 				e.printStackTrace();
 			}
 		}//run()
-		
+
 		//현재 쓰레드가 담당하는 클라이언트에게 메시지 보내기
 		public void sendToClient(String msg){
+			System.out.println(TAG + "sendToClient()");
+
 			try{
 				bw.write(msg+"\n");
 				bw.flush();

@@ -76,9 +76,8 @@ public class ChattingController {
 	}
 	
 	public void openChattingRoom(String roomID){
+		System.out.println(TAG + "openChattingRoom()");
 		ChattingRoomVO roomVO = dao.getChatRoomVO(roomID);
-		//연결시 대화 상대들을 인자로 받게끔 설정 필요
-		//여기서부터 thread 및 소켓 할당 필요할 듯.
 		ChattingFrame cf = new ChattingFrame(client, roomVO);
 	}
 }

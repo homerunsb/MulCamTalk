@@ -17,6 +17,7 @@ import com.mc.mctalk.vo.MessageVO;
 import com.mc.mctalk.vo.UserVO;
 
 public class ChattingClient {
+	private String TAG = "ChattingClient : ";
 	private Socket socket = null;
 //	final private String SERVER_IP= "127.0.0.1";
 	final private String SERVER_IP= "70.12.109.103";
@@ -28,7 +29,7 @@ public class ChattingClient {
 	private String loginUserID;
 	private Map<String, ChattingFrame> htChattingGUI; //채팅방 GUI 맵
 	private Map<String, ChattingRoomVO> htRoomVO; //채팅방  맵
-	Gson gson = new Gson();
+	private Gson gson = new Gson();
 
 	public ChattingClient(UserVO vo){
 		this.loginUserVO = vo;
@@ -42,6 +43,7 @@ public class ChattingClient {
 	}
 	//채팅 정보 전송을 위한 룸정보와 채팅방 유아이와 채팅 수/발신의 연결을 위한 세팅
 	public void setChattingGUI(ChattingFrame chattingGUI, ChattingRoomVO roomVO){
+		System.out.println(TAG + "setChattingGUI()");
 		//채팅 창을 더블클릭했을때 선택된 방의 ID값을 맵에 저장
 		this.htRoomVO.put(roomVO.getChattingRoomID(), roomVO);
 		//채팅 창을 더블클릭했을때 선택된 방의 UI Frame값을 맵에 저장
@@ -96,7 +98,6 @@ public class ChattingClient {
 	
 	public void sendMsg(String roomID, String msg){
 		try {
-			
 			if(roomID != null){
 				MessageVO messageVO = new MessageVO();
 				messageVO.setRoomVO(htRoomVO.get(roomID));
