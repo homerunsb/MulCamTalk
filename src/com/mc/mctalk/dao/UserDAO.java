@@ -24,8 +24,8 @@ public class UserDAO {
 	private String memberSearchSQL = "SELECT user_name, user_pf_img_path "
 			+"from users " 
 			+"WHERE user_id NOT IN (SELECT rel_user_id from user_relation WHERE user_id = ?) "
-			+"and user_id != ?"
-			+"and user_name like ? ";
+			+"and user_id != ? ";
+//			+"and user_name like ? ";
 	
 	
 	// 회원가입
@@ -105,13 +105,15 @@ public class UserDAO {
 	}
 	
 	//친구 추가시 회원 검색
-	public String SearchMember(String id, String searchName) {
+	public Map<String, UserVO> SearchMember(String id, String searchName) {
 		System.out.println(TAG + "SearchMember()");
 		String id_result = null;
+		Map<String, UserVO> searchMap = new LinkedHashMap<String, UserVO>();
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rst = null;
+		UserVO vo = null;
 
 		try {
 			conn = JDBCUtil.getConnection();
@@ -119,20 +121,24 @@ public class UserDAO {
 															// 사전 확보
 			stmt.setString(1, id);
 			stmt.setString(2, id);
-			stmt.setString(3, "%" + searchName + "%"); // 쿼리 URL 중 ?를 다른 변수로 치환
+//			stmt.setString(3, "%" + searchName + "%"); // 쿼리 URL 중 ?를 다른 변수로 치환
 			rst = stmt.executeQuery(); // 쿼리 Execute
 
 			while (rst.next()) { // 결과 집합에서 다음 레코드로 이동
 				// int id = rst.getInt(""); //현재 레코드에서 필드값 Call
-				id_result = rst.getString(1);
-				System.out.println(id_result);
+				vo.setUserID(rst.getString("rel_user_id"));
+				vo.setUserName(rst.getString("user_name"));
+				searchMap.put(vo.getUserID(), vo);
+				searchMap.put(vo.getUserName(), vo);
+//				id_result = rst.getString(1);
+//				System.out.println(id_result);
 			}
 		} catch (SQLException e) {
 			System.out.println("login e : " + e);
 		} finally {
 			JDBCUtil.close(rst, stmt, conn);
 		}
-		return id_result;
+		return searchMap;
 	}
 	
 	//친구 목록 불러오기
