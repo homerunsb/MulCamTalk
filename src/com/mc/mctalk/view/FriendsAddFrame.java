@@ -32,7 +32,7 @@ import javax.swing.event.ListSelectionListener;
  * 				3) 카톡 창 참고해서 깔끔하고 이쁘게 만들어 주세요~~^^ㅋㅋㅋ
  */
 
-public class FriendsAddFrame extends JFrame implements ListSelectionListener {	
+public class FriendsAddFrame extends JFrame {	
 	private JFrame f = new JFrame();
 	
 	private JPanel firstPanel = new JPanel(); //윗 패널
@@ -43,7 +43,7 @@ public class FriendsAddFrame extends JFrame implements ListSelectionListener {
 	private JPanel secondPanel = new JPanel(); //가운데 패널
 	private JList searchList = new JList(); //검색된 유저 리스트
 	private JScrollPane listScroll = new JScrollPane(); //리스트 스크롤
-	private String[] searchUser = {"1","2","3"}; //검색된 유저(차후에 수정해야함)
+//	private String[] searchUser = {"1","2","3"}; //검색된 유저(차후에 수정해야함)
 	
 	private JPanel thirdPanel = new JPanel(); //하단 패널
 	private JButton addBtn = new JButton("친구추가");
@@ -63,8 +63,7 @@ public class FriendsAddFrame extends JFrame implements ListSelectionListener {
 		listScroll.setViewportView(searchList);
 		listScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		searchList.setListData(searchUser);
-		searchList.addListSelectionListener(this);
+//		searchList.setListData(searchUser);
 		
 		//가운데 패널
 		secondPanel.add(listScroll);
@@ -83,12 +82,6 @@ public class FriendsAddFrame extends JFrame implements ListSelectionListener {
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setResizable(false);
 		this.setVisible(true);
-	}
-
-	@Override
-	public void valueChanged(ListSelectionEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	
