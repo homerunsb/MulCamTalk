@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.mc.mctalk.chatserver.ChattingClient;
+import com.mc.mctalk.view.FriendsAddFrame;
 import com.mc.mctalk.vo.UserVO;
 
 public class UserDAO {
@@ -119,17 +120,18 @@ public class UserDAO {
 			conn = JDBCUtil.getConnection();
 			stmt = conn.prepareStatement(memberSearchSQL); // SQL 미리 컴파일,인수값 공간
 															// 사전 확보
-			stmt.setString(1, id);
-			stmt.setString(2, id);
+			stmt.setString(1, "%" + id + "%");
+			stmt.setString(2, "%" + id + "%");
 //			stmt.setString(3, "%" + searchName + "%"); // 쿼리 URL 중 ?를 다른 변수로 치환
 			rst = stmt.executeQuery(); // 쿼리 Execute
 
 			while (rst.next()) { // 결과 집합에서 다음 레코드로 이동
 				// int id = rst.getInt(""); //현재 레코드에서 필드값 Call
-				vo.setUserID(rst.getString("rel_user_id"));
+				vo = new UserVO();
 				vo.setUserName(rst.getString("user_name"));
-				searchMap.put(vo.getUserID(), vo);
+				vo.setUserImgPath(rst.getString("user_pf_img_path"));
 				searchMap.put(vo.getUserName(), vo);
+				
 //				id_result = rst.getString(1);
 //				System.out.println(id_result);
 			}

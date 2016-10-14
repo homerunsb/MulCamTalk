@@ -28,16 +28,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.mc.mctalk.dao.UserDAO;
-import com.mc.mctalk.view.FriendsListPanel.FriendSearchKeyListener;
-import com.mc.mctalk.view.FriendsListPanel.FriendSelectionListener;
-import com.mc.mctalk.view.FriendsListPanel.FriendsListCellRenderer;
 import com.mc.mctalk.view.uiitem.CustomJScrollPane;
 import com.mc.mctalk.view.uiitem.RoundedImageMaker;
-import com.mc.mctalk.view.uiitem.SearchPanel;
 import com.mc.mctalk.vo.UserVO;
 
 /*
@@ -69,9 +63,8 @@ public class FriendsAddFrame extends JFrame {
 	private JPanel thirdPanel = new JPanel(); //하단 패널
 	private JButton addBtn = new JButton("친구추가");
 	
-	private Map<String, UserVO> mapFriends;
+	private Map<String, UserVO> mapFriends = new LinkedHashMap<>();
 	private RoundedImageMaker imageMaker = new RoundedImageMaker();
-	String inputData;
 
 	public FriendsAddFrame(){
 		
@@ -83,13 +76,13 @@ public class FriendsAddFrame extends JFrame {
 		searchBtn.addActionListener(new MemberSearchListener());
 		searchBtn.setPreferredSize(new Dimension(270, 30));
 		firstPanel.setPreferredSize(new Dimension(300, 100));
-		inputData = nameField.getText().toString();
 		add(firstPanel, BorderLayout.NORTH);
 		
 		//가운데 패널에 넣을 검색 리스트, 스크롤 세팅
 //		listScroll.setViewportView(searchList);
 //		listScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-//		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		searchList.setCellRenderer(new FriendsListCellRenderer());
+		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 //		searchList.setListData(searchUser);
 		
 		//가운데 패널
@@ -122,15 +115,11 @@ public class FriendsAddFrame extends JFrame {
 		listModel = (DefaultListModel) searchList.getModel();
 		
 		//DB접속 후 친구 목록 가져와 Custom JList Model에 프로필 사진 path, 이름 엘리먼트 추가하기.
-		UserDAO dao = new UserDAO();
-		mapFriends = new LinkedHashMap<String, UserVO>();
-		mapFriends = dao.SearchMember(inputData, inputData);
-		addElementToJList();
+//		addElementToJList();
 		
 		// JList 모양 변경
 //		searchList.setCellRenderer(new FriendsListCellRenderer());
-		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-//		searchList.addMouseListener(new FriendSelectionListener());
+//		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		listScroll = new CustomJScrollPane(searchList);
 		listScroll.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, new Color(230, 230, 230)));
@@ -149,39 +138,50 @@ public class FriendsAddFrame extends JFrame {
 	}
 	
 	//Map에 있는 개체 중 검색 값을 가진 JList엘리먼트를 찾아 보여주기 
-		public void searchFriendsMap(){
-			String inputSearchText = nameField.getText().trim();
-			if(inputSearchText.length()==0){
-				listModel.removeAllElements();
-				addElementToJList();
-			}else{
-				listModel.removeAllElements();
-				for (Map.Entry<String, UserVO> entry : mapFriends.entrySet()) {
-					UserVO vo = entry.getValue();
-					if (vo.getUserName().contains(inputSearchText)) {
-						listModel.addElement(vo);
-					} else {
-						listModel.removeElement(vo);
-					}
+	public void searchFriendsMap(){
+		String inputSearchText = nameField.getText().trim();
+		if(inputSearchText.length()==0){
+			listModel.removeAllElements();
+			addElementToJList();
+		}else{
+			listModel.removeAllElements();
+			for (Map.Entry<String, UserVO> entry : mapFriends.entrySet()) {
+				UserVO vo = entry.getValue();
+				if (vo.getUserName().contains(inputSearchText)) {
+					listModel.addElement(vo);
+				} else {
+					listModel.removeElement(vo);
 				}
 			}
 		}
-		
-		//TextField 검색 키보드 리스너(입력될때마다 리스너 실행)
-		class FriendSearchKeyListener implements KeyListener {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				searchFriendsMap();
-			}
-			@Override
-			public void keyReleased(KeyEvent e) {
-				searchFriendsMap();
-			}
-			@Override
-			public void keyTyped(KeyEvent e) {	
-				searchFriendsMap();
-			}
-		}
+	}
+	
+	public void setNameField(JTextField nameField)
+	{
+		this.nameField = nameField;
+	}
+	public JTextField getNameField()
+	{
+		return nameField;
+	}
+	
+	public void setSearchList(JList searchList)
+	{
+		this.searchList = searchList;
+	}
+	public JList getSearchList()
+	{
+		return searchList;
+	}
+	
+	public void setMapFriends(Map<String, UserVO> mapFriends)
+	{
+		this.mapFriends = mapFriends;
+	}
+	public Map<String, UserVO> getMapFriends()
+	{
+		return mapFriends;
+	}
 	
 	//버튼 이벤트
 	class MemberSearchListener implements ActionListener {
@@ -195,7 +195,11 @@ public class FriendsAddFrame extends JFrame {
 			}
 			if(e.getSource() == searchBtn)
 			{
-				
+				UserDAO udo = new UserDAO();
+				mapFriends = new LinkedHashMap<String, UserVO>();
+				mapFriends = udo.SearchMember(getNameField().toString(), getNameField().toString());
+				searchFriendsMap();
+				addElementToJList();
 			}
 		}
 		
