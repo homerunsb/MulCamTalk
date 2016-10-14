@@ -2,7 +2,7 @@ package com.mc.mctalk.vo;
 
 public class MessageVO {
 	ChattingRoomVO roomVO;
-	String sendUserID, message, sendTime;
+	String sendUserID, sendUserName, message, sendTime;
 
 	public ChattingRoomVO getRoomVO() {
 		return roomVO;
@@ -36,9 +36,17 @@ public class MessageVO {
 		this.sendTime = sendTime;
 	}
 
+	public String getSendUserName() {
+		return sendUserName;
+	}
+
+	public void setSendUserName(String sendUserName) {
+		this.sendUserName = sendUserName;
+	}
+
 	@Override
 	public String toString() {
-		return "MessageVO [roomVO=" + roomVO + ", sendUserID=" + sendUserID + ", message=" + message + ", sendTime="
-				+ sendTime + "]";
+		return "MessageVO [roomVO=" + roomVO + ", sendUserID=" + sendUserID + ", sendUserName=" + sendUserName
+				+ ", message=" + message + ", sendTime=" + sendTime + "]";
 	}
 }

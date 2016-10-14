@@ -102,6 +102,7 @@ public class ChattingClient {
 				MessageVO messageVO = new MessageVO();
 				messageVO.setRoomVO(htRoomVO.get(roomID));
 				messageVO.setSendUserID(loginUserID);
+				messageVO.setSendUserName(loginUserVO.getUserName());
 				messageVO.setMessage(msg);
 				//messageVO.setSendTime();
 				
