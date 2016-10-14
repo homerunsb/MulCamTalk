@@ -9,12 +9,17 @@ import java.awt.GridLayout;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
+
+import com.mc.mctalk.chatserver.ChattingClient;
+import com.mc.mctalk.dao.UserDAO;
+import com.mc.mctalk.vo.UserVO;
 
 /*
  * 담당자 : 정대용
@@ -40,8 +45,11 @@ private JPanel mainPanel = new JPanel();
 	private JButton alramOnBtn = new JButton("켜기");
 	private JButton alramOffBtn = new JButton("끄기");
 	
-	
 	private EtchedBorder eBorder = new EtchedBorder(EtchedBorder.RAISED);
+	
+	private UserVO loginUserVO;
+	private String loginUserID;
+	private String UserIconPath;
 	
 	public SettingPanel()
 	{		
@@ -86,5 +94,12 @@ private JPanel mainPanel = new JPanel();
 		
 		setSize(380,550);
 		setVisible(true);
+	}
+	
+	public SettingPanel(UserVO vo)
+	{
+		this.loginUserVO = vo;
+		this.loginUserID = vo.getUserID();
+		this.UserIconPath = vo.getUserImgPath();
 	}
 }

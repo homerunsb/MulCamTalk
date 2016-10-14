@@ -50,7 +50,7 @@ public class FriendsAddFrame extends JFrame {
 	private JFrame f = new JFrame();
 	
 	private JPanel firstPanel = new JPanel(); //윗 패널
-	private JLabel addLabel = new JLabel("검색할 아이디를 입력하시오.");
+	private JLabel addLabel = new JLabel("검색할 이름을 입력하시오.");
 	private JTextField nameField = new JTextField();
 	private JButton searchBtn = new JButton("검색");
 
@@ -58,7 +58,6 @@ public class FriendsAddFrame extends JFrame {
 	private JList searchList = new JList(); //검색된 유저 리스트
 	private DefaultListModel listModel; //리스트 모델
 	private JScrollPane listScroll = new JScrollPane(); //리스트 스크롤
-//	private String[] searchUser = {"1","2","3"}; //검색된 유저(차후에 수정해야함)
 	
 	private JPanel thirdPanel = new JPanel(); //하단 패널
 	private JButton addBtn = new JButton("친구추가");
@@ -67,6 +66,7 @@ public class FriendsAddFrame extends JFrame {
 	private RoundedImageMaker imageMaker = new RoundedImageMaker();
 
 	public FriendsAddFrame(){
+		initPanel();
 		
 		//상단 패널
 		firstPanel.add(addLabel);
@@ -79,8 +79,8 @@ public class FriendsAddFrame extends JFrame {
 		add(firstPanel, BorderLayout.NORTH);
 		
 		//가운데 패널에 넣을 검색 리스트, 스크롤 세팅
-//		listScroll.setViewportView(searchList);
-//		listScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		listScroll.setViewportView(searchList);
+		listScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		searchList.setCellRenderer(new FriendsListCellRenderer());
 		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 //		searchList.setListData(searchUser);
@@ -104,22 +104,14 @@ public class FriendsAddFrame extends JFrame {
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setResizable(false);
 		this.setVisible(true);
-		initPanel(false);
 	}
 	
-	public void initPanel(boolean hasMultiSelectionFuntion){
+	public void initPanel(){
 		this.setLayout(new BorderLayout());
 		
 		// JList에 데이터 담기
 		searchList = new JList(new DefaultListModel());
 		listModel = (DefaultListModel) searchList.getModel();
-		
-		//DB접속 후 친구 목록 가져와 Custom JList Model에 프로필 사진 path, 이름 엘리먼트 추가하기.
-//		addElementToJList();
-		
-		// JList 모양 변경
-//		searchList.setCellRenderer(new FriendsListCellRenderer());
-//		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		listScroll = new CustomJScrollPane(searchList);
 		listScroll.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, new Color(230, 230, 230)));
@@ -147,13 +139,14 @@ public class FriendsAddFrame extends JFrame {
 			listModel.removeAllElements();
 			for (Map.Entry<String, UserVO> entry : mapFriends.entrySet()) {
 				UserVO vo = entry.getValue();
-				if (vo.getUserName().contains(inputSearchText)) {
+				if (vo.getUserID().contains(inputSearchText)) {
 					listModel.addElement(vo);
 				} else {
 					listModel.removeElement(vo);
 				}
 			}
 		}
+		System.out.println(listModel);
 	}
 	
 	public void setNameField(JTextField nameField)
@@ -191,15 +184,16 @@ public class FriendsAddFrame extends JFrame {
 			// TODO Auto-generated method stub
 			if(e.getSource() == addBtn)
 			{
-				
+				UserDAO udo = new UserDAO();
 			}
 			if(e.getSource() == searchBtn)
 			{
 				UserDAO udo = new UserDAO();
 				mapFriends = new LinkedHashMap<String, UserVO>();
-				mapFriends = udo.SearchMember(getNameField().toString(), getNameField().toString());
+				mapFriends = udo.SearchMember(nameField.getText().toString(), nameField.getText().toString());
 				searchFriendsMap();
 				addElementToJList();
+//				System.out.println(listModel);
 			}
 		}
 		
