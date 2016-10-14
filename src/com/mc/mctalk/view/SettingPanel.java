@@ -49,7 +49,7 @@ private JPanel mainPanel = new JPanel();
 	
 	private UserVO loginUserVO;
 	private String loginUserID;
-	private String UserIconPath;
+	private String userIconPath;
 	
 	public SettingPanel()
 	{		
@@ -100,6 +100,33 @@ private JPanel mainPanel = new JPanel();
 	{
 		this.loginUserVO = vo;
 		this.loginUserID = vo.getUserID();
-		this.UserIconPath = vo.getUserImgPath();
+		this.userIconPath = vo.getUserImgPath();
+	}
+	
+	public void setLoginUserVO(UserVO vo)
+	{
+		this.loginUserVO = vo;
+	}
+	public UserVO getLoginUserVO()
+	{
+		return loginUserVO;
+	}
+	
+	public void setLoginUserID(UserVO vo)
+	{
+		this.loginUserID = vo.getUserID();
+	}
+	public String getLoginUserID()
+	{
+		return loginUserID;
+	}
+	
+	public void setUserIconPath(UserVO vo)
+	{
+		this.userIconPath = vo.getUserImgPath();
+	}
+	public String getUserIconPath()
+	{
+		return userIconPath;
 	}
 }
