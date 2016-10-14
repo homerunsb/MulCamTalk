@@ -83,19 +83,20 @@ public class ChattingRoomDAO {
 				insertDiconnClient(msg.getMessageID(), msg.getSendUserID());
 				System.out.println(" 반송!"+msg.getSendUserID()+"에게 보냈으나  채팅방을 안열어 반송되었음. disconn 디비에 저장합니다. ");
 				throw new Exception();
-			}
-			stmt = conn.prepareStatement(insertMessageToDBSQL, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, msg.getRoomVO().getChattingRoomID());
-			stmt.setString(2, msg.getSendUserID());
-			stmt.setString(3, msg.getMessage());
-			stmt.setString(4, msg.getSendTime());
-			int cnt = stmt.executeUpdate();
-			if(cnt>0){
-				rst = stmt.getGeneratedKeys();
-				if(rst.next()){
-					System.out.println("Message Insert Success");
-					messageID = rst.getString(1);
-					System.out.println("메세지 ID  : " + messageID);
+			}else{
+				stmt = conn.prepareStatement(insertMessageToDBSQL, Statement.RETURN_GENERATED_KEYS);
+				stmt.setString(1, msg.getRoomVO().getChattingRoomID());
+				stmt.setString(2, msg.getSendUserID());
+				stmt.setString(3, msg.getMessage());
+				stmt.setString(4, msg.getSendTime());
+				int cnt = stmt.executeUpdate();
+				if(cnt>0){
+					rst = stmt.getGeneratedKeys();
+					if(rst.next()){
+						System.out.println("Message Insert Success");
+						messageID = rst.getString(1);
+						System.out.println("메세지 ID  : " + messageID);
+					}
 				}
 			}
 		} catch (SQLException e) {
@@ -103,8 +104,8 @@ public class ChattingRoomDAO {
 			e.printStackTrace();
 		}finally{
 			JDBCUtil.close(stmt, conn);
-			return messageID;
 		}
+		return messageID;
 	}
 	
 	//기존에 1:1 채팅방을 만든적이 있는지 검색하기

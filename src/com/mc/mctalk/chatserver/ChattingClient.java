@@ -88,13 +88,11 @@ public class ChattingClient {
 					//해당 roomID를 가진 ChattingFrame으로 텍스트 전송
 					if(cf != null){
 						cf.textAreaSetText(reveiveMsg+"\n");
-					}else{
-					
+					}else if(cf==null){
 						//// 열고자하는 채팅방 룸아이디에 해당하는 GUI가 없다면 예외가 발생하지 않음 조건문으로 서버에 반송 
 						System.out.println("반송 시작  ");
 						sendback(vo);
 						System.out.println("반송 완료");
-						
 					}
 				}
 			} catch (IOException e) {

@@ -90,7 +90,8 @@ public class FriendsListPanel extends JPanel {
 		pSearch = new SearchPanel();
 		tfSearch = pSearch.getTfSearch();
 		tfSearch.addKeyListener(new FriendSearchKeyListener());
-		
+		tfSearch.setPreferredSize(new Dimension(325, 15));
+
 		// JList에 데이터 담기
 		jlFriendsList = new JList(new DefaultListModel());
 		listModel = (DefaultListModel) jlFriendsList.getModel();
