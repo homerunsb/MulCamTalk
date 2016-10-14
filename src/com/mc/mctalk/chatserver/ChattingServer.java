@@ -114,7 +114,7 @@ public class ChattingServer {
 					//접속한 유저가 아닐 경우
 					disconnClient = (String) userList.get(i);
 					chatdao.insertDiconnClient(msgID, disconnClient);
-					e.printStackTrace();
+//					e.printStackTrace();ㄴ
 				}
 			}
 		}

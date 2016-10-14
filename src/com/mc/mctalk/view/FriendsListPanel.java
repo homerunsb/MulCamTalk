@@ -134,7 +134,7 @@ public class FriendsListPanel extends JPanel {
 			if(e.getClickCount() >= 2 && jlFriendsList.getSelectedIndex() != -1){
 				//선택된 친구ID와 로그인 ID를 매개변수로 컨트롤러 호출
 				UserVO vo = (UserVO)jlFriendsList.getSelectedValue();
-				new ChattingController(client, vo.getUserID());
+				new ChattingController(client, vo);
 			}
 		}
 		public void mouseReleased(MouseEvent arg0) {}

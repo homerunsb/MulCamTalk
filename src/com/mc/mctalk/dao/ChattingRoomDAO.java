@@ -35,7 +35,7 @@ public class ChattingRoomDAO {
 															+ "	where me.room_id = other.room_id ) "
 															+ "GROUP BY room_id "
 															+ "HAVING count(room_id) = 2 ";
-	private String make1on1ChattingRoomSQL = "insert into chat_rooms "
+	private String make1onNChattingRoomSQL = "insert into chat_rooms "
 																+ "(room_created_time, room_name) "
 																+ "values(now(), ?)";
 	private String addUserToChattingRoomSQL = "insert into chat_room_users "
@@ -47,14 +47,13 @@ public class ChattingRoomDAO {
 															 + "from chat_room_users "
 															 + "where room_id = ?) ";	 
 								
-	
 	private String insertMessageToDBSQL = "INSERT INTO messages (room_id,msg_sent_user_id,"
 			+ "msg_content,msg_sent_time) values (? ,? ,? ,?)";
 	private String insertDisconnClientSQL = "INSERT INTO disconn_client (msg_id,disconn_client_id) "
 			+ "values (?,?)"; // 영태가 작업중...
 	
 	
-	
+	//접속하지 않은 유저에게 메시지 전송시 관련 정보 입력
 	public void insertDiconnClient(String msg_id, String disconnClient){
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -72,6 +71,7 @@ public class ChattingRoomDAO {
 		}
 	}
 	
+	//접속 여부에 관계 없이 메시지 DB 입력
 	public String insertMessageToDB(MessageVO msg){
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -92,9 +92,7 @@ public class ChattingRoomDAO {
 					messageID = rst.getString(1);
 					System.out.println("메세지 ID  : " + messageID);
 				}
-				
 			}
-			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -105,9 +103,7 @@ public class ChattingRoomDAO {
 		
 	}
 	
-	
-	
-	
+	//기존에 1:1 채팅방을 만든적이 있는지 검색하기
 	public String searchLastChatRoom(String loginID, String friendID){
 		System.out.println(TAG + "searchLastChatRoom()");
 		String roomID = null; 
@@ -135,57 +131,26 @@ public class ChattingRoomDAO {
 		return roomID;
 	}
 	
-	
-	public String make1on1ChattingRoom(String loginID, String friendID){
-		System.out.println(TAG + "make1on1ChattingRoom()");
-		String roomID = null;
-		
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rst = null;
-		try{
-			conn = JDBCUtil.getConnection();
-			stmt = conn.prepareStatement(make1on1ChattingRoomSQL, Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, loginID+"/"+friendID); 
-			int cnt = stmt.executeUpdate();
-
-			if(cnt > 0){
-				rst = stmt.getGeneratedKeys();
-				if(rst.next()){
-					System.out.println("Chat Room Insert Success");
-					roomID = rst.getString(1);
-					System.out.println("만들어진 방 ID : " + roomID);
-				}
-			}		
-			
-			
-		}catch(SQLException e){
-			System.out.println("make1on1ChattingRoom e : " + e);
-		}finally {
-			JDBCUtil.close(rst,stmt, conn);
-		}
-		return roomID;
-	}
-	
-	//인원수와 상관없이 방을 만들자.
-	// 리스트를 매개변수로 받아서 여러명들을 처리하도록 하겠음. 
-	public String makeChattingRoom(String loginID, LinkedHashMap<String, UserVO> lastSelected ){
+	// 채팅방 만들기
+	public String makeChattingRoom(String loginID, LinkedHashMap<String, UserVO> lastSelected, boolean is1on1){
 		System.out.println(TAG + "makeChattingRoom()");
 		String roomID = null;
-		String friendNames = null;
+		String friendNames = "나";
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rst = null;
 		try{
 			conn = JDBCUtil.getConnection();
-			stmt = conn.prepareStatement(make1on1ChattingRoomSQL, Statement.RETURN_GENERATED_KEYS);
+			stmt = conn.prepareStatement(make1onNChattingRoomSQL, Statement.RETURN_GENERATED_KEYS);
 			Iterator<Entry<String, UserVO>> entry = lastSelected.entrySet().iterator();
 			for(int i =0 ; i<lastSelected.size(); i++){
 				friendNames += "/"+ entry.next().getValue().getUserName();
 			}
-			
-			
-			stmt.setString(1, loginID+"/"+friendNames);// 방이름이 될 것이다. 
+			if(is1on1){
+				stmt.setString(1, friendNames.split("/")[1]);
+			}else{
+				stmt.setString(1, friendNames);// 방이름이 될 것이다. 
+			}
 			int cnt = stmt.executeUpdate();
 
 			if(cnt > 0){
@@ -206,9 +171,37 @@ public class ChattingRoomDAO {
 		return roomID;
 	}
 	
+//	public String make1on1ChattingRoom(String loginID, String friendID){
+//	System.out.println(TAG + "make1on1ChattingRoom()");
+//	String roomID = null;
+//	
+//	Connection conn = null;
+//	PreparedStatement stmt = null;
+//	ResultSet rst = null;
+//	try{
+//		conn = JDBCUtil.getConnection();
+//		stmt = conn.prepareStatement(make1on1ChattingRoomSQL, Statement.RETURN_GENERATED_KEYS);
+//		stmt.setString(1, loginID+"/"+friendID); 
+//		int cnt = stmt.executeUpdate();
+//
+//		if(cnt > 0){
+//			rst = stmt.getGeneratedKeys();
+//			if(rst.next()){
+//				System.out.println("Chat Room Insert Success");
+//				roomID = rst.getString(1);
+//				System.out.println("만들어진 방 ID : " + roomID);
+//			}
+//		}		
+//	}catch(SQLException e){
+//		System.out.println("make1on1ChattingRoom e : " + e);
+//	}finally {
+//		JDBCUtil.close(rst,stmt, conn);
+//	}
+//	return roomID;
+//}
 	
 	
-	//일단은 ID만 받으나, 추후에 친구 초대 기능을 위해 객체로 변경 필요
+	//채팅방에 참여하는 유저 추가하기
 	public boolean addUserToChattingRoom(String roomID, String userID){
 		System.out.println(TAG + "addUserToChattingRoom()");
 		boolean isSuceed = false; 
@@ -268,13 +261,13 @@ public class ChattingRoomDAO {
 //				UserVO.setUserJoinDate(rst.getString(9));
 //				UserVO.setUserImgPath(rst.getString(10));
 				listChattingUserIDs.add(UserVO.getUserID());
-				roomName += UserVO.getUserName() + "/";
+//				roomName += UserVO.getUserName() + "/";
 			}
 			
-			if(roomName.substring(roomName.length()-1, roomName.length()).equals("/")){
-				roomName = roomName.substring(0, roomName.length()-1);
-//				System.out.println("방이름 : " + roomName);
-			}
+//			if(roomName.substring(roomName.length()-1, roomName.length()).equals("/")){
+//				roomName = roomName.substring(0, roomName.length()-1);
+////				System.out.println("방이름 : " + roomName);
+//			}
 			
 			roomVO.setChattingRoomID(roomID);
 			roomVO.setChattingRoomName(roomName);
