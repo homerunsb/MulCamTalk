@@ -86,38 +86,43 @@ public class ChattingServer {
 		MessageVO messageVO = gson.fromJson(msg, MessageVO.class);
 		ChattingRoomVO roomVO = messageVO.getRoomVO();
 		String roomID = roomVO.getChattingRoomID();
-		// 1.보내기 전에 데이터 베이스에 메세지 정보를 넣는다!!! 메세지 아이디값 반환 
-				String msgID = chatdao.insertMessageToDB(messageVO);
-		
-//		htRoomVO.put(roomID, roomVO);
-		ArrayList userList = null;
-		
-		if(roomVO!=null){
-			userList = (ArrayList) roomVO.getChattingRoomUserIDs();
-//			System.out.println("서버 받은 ArrayList : " + userList.size());
-		}
-		
-		if(userList.size()>0){
-			for (int i = 0; i < userList.size(); i++) {
-//				System.out.println("받은 방 유저 리스트 : " + userList.get(i));
-				try{
-					System.out.println(userList.get(i));
-					htThreadList.get(userList.get(i)).sendToClient(msg);
-				}catch (SocketException e){
-					System.out.println("SocketException");
-					e.printStackTrace();
-				} catch (IOException e) {
-					System.out.println("IOException");
-					e.printStackTrace();
-				} catch (NullPointerException e){
-					System.out.println("NullPointerException");
-					//접속한 유저가 아닐 경우
-					disconnClient = (String) userList.get(i);
-					chatdao.insertDiconnClient(msgID, disconnClient);
-//					e.printStackTrace();ㄴ
+		// 1.보내기 전에 데이터 베이스에 메세지 정보를 넣는다!!! 메세지 아이디값 반환
+		// 2.메세지에 해당 메세지 아이디를 넣고 다시 제이슨으로 조립후 변수에 담음. 
+		// 3.메시지 ID가 있을 경우는 반송된 메시지, 없을 경우는 새 메시지.
+		try{		
+			String msgID = chatdao.insertMessageToDB(messageVO);
+			messageVO.setMessageID(msgID);
+			msg = gson.toJson(messageVO);
+			ArrayList userList = null;
+			if(roomVO!=null){
+				userList = (ArrayList) roomVO.getChattingRoomUserIDs();
+	//			System.out.println("서버 받은 ArrayList : " + userList.size());
+			}
+			if(userList.size()>0){
+				for (int i = 0; i < userList.size(); i++) {
+	//				System.out.println("받은 방 유저 리스트 : " + userList.get(i));
+					try{
+						System.out.println(userList.get(i));
+						htThreadList.get(userList.get(i)).sendToClient(msg);
+					}catch (NullPointerException e){
+						System.out.println("NullPointerException");
+						//접속한 유저가 아닐 경우
+						disconnClient = (String) userList.get(i);
+						chatdao.insertDiconnClient(msgID, disconnClient);
+	//					e.printStackTrace();ㄴ
+					}
 				}
 			}
-		}
+		}catch (SocketException e){
+			System.out.println("SocketException");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("IOException");
+			e.printStackTrace();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
 	}
 	
 	//쓰레드 목록에서 특정 쓰레드 삭제하기

@@ -46,7 +46,7 @@ public class ChattingRoomDAO {
 															 + "where user_id in (select user_id " 
 															 + "from chat_room_users "
 															 + "where room_id = ?) ";	 
-								
+	private String searchChatRoomInfoSQL = "select * from chat_rooms where room_id = ? ";	 			
 	private String insertMessageToDBSQL = "INSERT INTO messages (room_id,msg_sent_user_id,"
 			+ "msg_content,msg_sent_time) values (? ,? ,? ,?)";
 	private String insertDisconnClientSQL = "INSERT INTO disconn_client (msg_id,disconn_client_id) "
@@ -72,13 +72,18 @@ public class ChattingRoomDAO {
 	}
 	
 	//접속 여부에 관계 없이 메시지 DB 입력
-	public String insertMessageToDB(MessageVO msg){
+	public String insertMessageToDB(MessageVO msg)throws Exception{
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rst = null;
 		String messageID = null;
 		conn = JDBCUtil.getConnection();
 		try {
+			if(msg.getMessageID()!=null){
+				insertDiconnClient(msg.getMessageID(), msg.getSendUserID());
+				System.out.println(" 반송!"+msg.getSendUserID()+"에게 보냈으나  채팅방을 안열어 반송되었음. disconn 디비에 저장합니다. ");
+				throw new Exception();
+			}
 			stmt = conn.prepareStatement(insertMessageToDBSQL, Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, msg.getRoomVO().getChattingRoomID());
 			stmt.setString(2, msg.getSendUserID());
@@ -100,7 +105,6 @@ public class ChattingRoomDAO {
 			JDBCUtil.close(stmt, conn);
 			return messageID;
 		}
-		
 	}
 	
 	//기존에 1:1 채팅방을 만든적이 있는지 검색하기
@@ -161,8 +165,6 @@ public class ChattingRoomDAO {
 					System.out.println("만들어진 방 ID : " + roomID);
 				}
 			}		
-			
-			
 		}catch(SQLException e){
 			System.out.println("make1on1ChattingRoom e : " + e);
 		}finally {
@@ -268,10 +270,17 @@ public class ChattingRoomDAO {
 //				roomName = roomName.substring(0, roomName.length()-1);
 ////				System.out.println("방이름 : " + roomName);
 //			}
-			
 			roomVO.setChattingRoomID(roomID);
-			roomVO.setChattingRoomName(roomName);
 			roomVO.setChattingRoomUserIDs(listChattingUserIDs);
+			
+			stmt = conn.prepareStatement(searchChatRoomInfoSQL);
+			stmt.setString(1, roomID);
+			rst = stmt.executeQuery();
+			
+			while(rst.next()){
+				roomVO.setChattingRoomName(rst.getString("room_name"));
+			}
+
 		}catch(SQLException e){
 			System.out.println("addUserToChattingRoom e : " + e);
 		}finally {

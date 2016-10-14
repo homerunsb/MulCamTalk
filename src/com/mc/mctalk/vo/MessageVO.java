@@ -2,7 +2,15 @@ package com.mc.mctalk.vo;
 
 public class MessageVO {
 	ChattingRoomVO roomVO;
-	String sendUserID, sendUserName, message, sendTime;
+	String sendUserID, sendUserName, message, sendTime, messageID ;
+
+	public String getMessageID() {
+		return messageID;
+	}
+
+	public void setMessageID(String messageID) {
+		this.messageID = messageID;
+	}
 
 	public ChattingRoomVO getRoomVO() {
 		return roomVO;
