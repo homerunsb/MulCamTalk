@@ -17,8 +17,11 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.mc.mctalk.chatserver.ChattingClient;
+
 public class MainMenuPanel extends JPanel {
 	private MainFrame mainFrame;
+	private ChattingClient client;
 	private JPanel pMenuBtn, pAddBtn;
 	private JButton[] menuButtons = new JButton[3];
 	private JButton[] addButtons = new JButton[2];
@@ -38,8 +41,9 @@ public class MainMenuPanel extends JPanel {
 	final private String TAG = "MainMenuPanel_new : ";
 	
 	//* 생성자 호출시 MainFrame을 인자로 넘겨 받음
-	public MainMenuPanel(MainFrame f) {
+	public MainMenuPanel(MainFrame f, ChattingClient client) {
 		this.mainFrame = f;
+		this.client = client;
 		this.setLayout(new BorderLayout());
 		this.setBackground(Color.white);
 		pMenuBtn = new JPanel();
@@ -166,7 +170,7 @@ public class MainMenuPanel extends JPanel {
 				FriendsAddFrame addFriend = new FriendsAddFrame();
 			}else{
 				//방 추가 프레임 연결 2016.10.7
-				CreatingChattingRoomPanel creatingChattingRoom = new CreatingChattingRoomPanel();
+				CreatingChattingRoomPanel creatingChattingRoom = new CreatingChattingRoomPanel(client);
 			}
 			System.out.println(selectedIndex);
 			

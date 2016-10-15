@@ -1,20 +1,21 @@
 package com.mc.mctalk.vo;
 
-import java.io.Serializable;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
-import com.mc.mctalk.view.uiitem.RoundedImageMaker;
-
-public class UserVO implements Serializable{
-    private static final long serialVersionUID = 2L;
-
-	private final String DEFAULT_IMAGE = "images/default_profile.png";
-	private String userID, userPassword, userName, userMsg, userBirth, userPhone, userAddress;
+public class UserVO {
+	private String userID, userPassword, userName, userMsg, userBirth, 
+						userMail, userPhone, userAddress, userJoinDate, userImgPath;
 	private int userSex;
-	private Icon profileImage;
 
+	public UserVO(){		
+	}
+	
+	public UserVO(String text, String text2, String text3, int memberSex, int memberBirthMonth, int memberBirthDay) {
+		this.userID = text;
+		this.userPassword = text2;
+		this.userName = text3;
+		this.userSex = memberSex;
+		this.userBirth = "month : " + memberBirthMonth + " day : " + memberBirthDay;
+	}
+	
 	public String getUserID() {
 		return userID;
 	}
@@ -32,6 +33,12 @@ public class UserVO implements Serializable{
 	}
 	public void setUserBirth(String userBirth) {
 		this.userBirth = userBirth;
+	}
+	public String getUserMail() {
+		return userMail;
+	}
+	public void setUserMail(String userMail) {
+		this.userMail = userMail;
 	}
 	public int getUserSex() {
 		return userSex;
@@ -63,30 +70,24 @@ public class UserVO implements Serializable{
 	public void setUserMsg(String userMsg) {
 		this.userMsg = userMsg;
 	}
-	public Icon getProfileImage() {
-		return profileImage;
+	public String getUserJoinDate() {
+		return userJoinDate;
 	}
-	
-	public UserVO(){
-		
+	public void setUserJoinDate(String userJoinDate) {
+		this.userJoinDate = userJoinDate;
 	}
-	
-	
-	
-	public UserVO(String text, String text2, String text3, int memberSex, int memberBirthMonth, int memberBirthDay) {
-		this.userID = text;
-		this.userPassword =text2;
-		this.userName = text3;
-		this.userSex = memberSex;
-		this.userBirth = "month : " + memberBirthMonth + " day : " + memberBirthDay;	}
-	public void setProfileImage(String img_path) {
-		//프로필 이미지가 지정이 안되어 있을시 디폴트 이미지 사용
-		if(img_path == null || img_path.equals("")){
-			img_path = DEFAULT_IMAGE;
-		}
-		//이미지 둥글게 만들기
-		RoundedImageMaker imageMaker = new RoundedImageMaker();
-		ImageIcon profileImage = imageMaker.getRoundedImage(img_path, 70, 70);
-		this.profileImage = profileImage;
+	public String getUserImgPath() {
+		return userImgPath;
+	}
+	public void setUserImgPath(String userImgPath) {
+		this.userImgPath = userImgPath;
+	}
+
+	@Override
+	public String toString() {
+		return "UserVO [userID=" + userID + ", userPassword=" + userPassword + ", userName=" + userName + ", userMsg="
+				+ userMsg + ", userBirth=" + userBirth + ", userMail=" + userMail + ", userPhone=" + userPhone
+				+ ", userAddress=" + userAddress + ", userJoinDate=" + userJoinDate + ", userImgPath=" + userImgPath
+				+ ", userSex=" + userSex + "]";
 	}
 }

@@ -14,23 +14,33 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.RepaintManager;
 
+import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.dao.UserDAO;
 
 public class MainFrame extends JFrame {
 	final private String TAG = "MainFrame : ";
-	private static String loginID = "test";	//로그인 ID
-	static private JPanel pCover = new JPanel();
-	private MainMenuPanel pMainMenu = new MainMenuPanel(this);
-	static private FriendsListPanel pFriendsList = new FriendsListPanel();
-	static private JPanel pChattingList = new JPanel();
-	static private SettingPanel pSetting = new SettingPanel();
+	private String loginID;	//로그인 ID
+	private JPanel pCover;
+	private MainMenuPanel pMainMenu;
+	private FriendsListPanel pFriendsList;
+	private JPanel pChattingList;
+	private SettingPanel pSetting;
+	private ChattingClient client;
 	final private String FRAME_TITLE = "MulCamTalk";
 	final private int FRAME_WIDTH = 380, FRAME_HEIGHT = 600;
 	final private int MENU_WIDTH = 380, MENU_HEIGHT = 50;
 	final private int CONTENT_WIDTH = 380, CONTENT_HEIGHT = 550;
 
-	public MainFrame() {
+	public MainFrame(ChattingClient client) {
 		System.out.println(TAG + "MainFrame()");
+		this.client = client;
+		loginID = client.getLoginUserVO().getUserID();
+		pCover = new JPanel();
+		pMainMenu = new MainMenuPanel(this, client);
+		pFriendsList = new FriendsListPanel(client);
+		pChattingList = new JPanel();
+		pSetting = new SettingPanel();
+		
 		//* panel setting
 		pCover.setLayout(new BoxLayout(pCover, BoxLayout.Y_AXIS));
 		pCover.setBackground(Color.black);
@@ -63,7 +73,7 @@ public class MainFrame extends JFrame {
 	public void changePanel(String panelName){
 		JPanel selectedPanel = null;
 		switch (panelName) {
-			case "friendsList": selectedPanel = pFriendsList; break;
+			case "friendsList": selectedPanel = pFriendsList = new FriendsListPanel(client); break;
 			case "chattingList": selectedPanel = pChattingList; break;
 			case "setting": selectedPanel = pSetting; break;
 		}
@@ -73,7 +83,7 @@ public class MainFrame extends JFrame {
 		pCover.repaint();
 	}
 
-	public static String getLoginID() {
+	public String getLoginID() {
 		return loginID;
 	}
 	

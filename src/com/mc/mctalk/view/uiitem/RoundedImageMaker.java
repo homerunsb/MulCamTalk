@@ -15,7 +15,13 @@ import javax.swing.JLabel;
 import javax.swing.border.AbstractBorder;
 
 public class RoundedImageMaker extends AbstractBorder {
+	private final String DEFAULT_USER_IMAGE = "images/default_profile.png";
+
 	public ImageIcon getRoundedImage(String path, int width, int height) {
+		// 프로필 이미지가 지정이 안되어 있을시 디폴트 이미지 사용
+		if (path == null || path.equals("")) {
+			path = DEFAULT_USER_IMAGE;
+		}
 		try {
 			BufferedImage master = ImageIO.read(new File(path));
 
