@@ -45,14 +45,14 @@ public class MainMenuPanel extends JPanel {
 		this.mainFrame = f;
 		this.client = client;
 		this.setLayout(new BorderLayout());
-		this.setBackground(Color.white);
+		this.setBackground(new Color(82, 134, 198));
 		pMenuBtn = new JPanel();
-		pMenuBtn.setBackground(Color.white);
+		pMenuBtn.setBackground(new Color(82, 134, 198));
 		pMenuBtn.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
 		pAddBtn = new JPanel();
-		pAddBtn.setBackground(Color.white);
-		pAddBtn.setBorder(new EmptyBorder(11,0,0,0));
+		pAddBtn.setBackground(new Color(82, 134, 198));
+		pAddBtn.setBorder(new EmptyBorder(5,0,0,0));
 		pAddBtn.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		
 		mapMenuButtons  = new LinkedHashMap<String, JButton>();

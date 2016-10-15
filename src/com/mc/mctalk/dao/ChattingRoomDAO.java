@@ -16,7 +16,6 @@ import com.mysql.jdbc.Statement;
 
 public class ChattingRoomDAO {
 	private final String TAG = "ChattingRoomDAO : ";
-	//쿼리 수정 필요. 그룹방에 같이 들어있는 경우도 검색됨.
 	private String searchLastChatRoomSQL =  "SELECT room_id "
 															+ "FROM chat_room_users "
 															+ "WHERE room_id in( "
@@ -281,7 +280,12 @@ public class ChattingRoomDAO {
 			while(rst.next()){
 				roomVO.setChattingRoomName(rst.getString("room_name"));
 			}
-
+			
+			System.out.println("====방 정보====");
+			System.out.println(roomVO.getChattingRoomID());
+			System.out.println(roomVO.getChattingRoomName());
+			System.out.println(roomVO.getChattingRoomUserIDs());
+			System.out.println("====끝====");
 		}catch(SQLException e){
 			System.out.println("addUserToChattingRoom e : " + e);
 		}finally {
