@@ -225,6 +225,7 @@ public class MembershipFrame extends JFrame {
 		closebtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
+				LoginFrame lf = new LoginFrame();
 			}
 		});
 		join.addActionListener(joincomplete);
