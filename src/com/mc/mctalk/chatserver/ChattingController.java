@@ -23,6 +23,7 @@ public class ChattingController {
 		this.loginID = loginID;
 		this.friendID = friendID;
 		hasChattingRoom();
+		//test
 	}
 	
 	//다중선택시 오버로
