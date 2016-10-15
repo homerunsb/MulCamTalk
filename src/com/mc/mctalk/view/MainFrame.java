@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -54,6 +55,7 @@ public class MainFrame extends JFrame {
 		//* panel setting
 		pCover.setLayout(new BoxLayout(pCover, BoxLayout.Y_AXIS));
 		pCover.setBackground(new Color(82, 134, 198));
+		pCover.setBorder(BorderFactory.createLineBorder(new Color(82, 134, 198)));
 
 		pMainMenu.setPreferredSize(new Dimension(MENU_WIDTH, MENU_HEIGHT));
 		pFriendsList.setPreferredSize(new Dimension(CONTENT_WIDTH, CONTENT_HEIGHT));
