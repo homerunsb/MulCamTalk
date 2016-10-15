@@ -1,9 +1,9 @@
 package com.mc.mctalk.view;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -25,7 +26,9 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+
 import org.jdesktop.swingx.prompt.PromptSupport;
+
 import com.mc.mctalk.dao.UserDAO;
 import com.mc.mctalk.vo.UserVO;
 
@@ -63,11 +66,12 @@ public class MembershipFrame extends JFrame {
 	private JComboBox dayCombo;
 	private JButton join = new JButton("가입하기");
 	private JButton closebtn = new JButton("가입취소");
-	private Font grayFont = new Font("dialog", Font.BOLD, 12);
-	private Color backGroundColor = new Color(255, 255, 255);
+	private Font grayFont = new Font("맑은 고딕", Font.BOLD, 12);
+	private Color backGroundColor = new Color(82, 134, 198);
 	private Dimension fieldSize = new Dimension(215, 27);
 	private joinResult joincomplete = new joinResult();
-	private ImageIcon tokLogo = new ImageIcon("images/logo.png");
+	private ImageIcon tokLogo = new ImageIcon("images/logo_big.png");
+	
 	private CheckPassword checkPassword = new CheckPassword();
 	private ActionCheckManSexBox checkManSex = new ActionCheckManSexBox();
 	private ActionCheckWomanSexBox checkWomanSex = new ActionCheckWomanSexBox();
@@ -88,6 +92,11 @@ public class MembershipFrame extends JFrame {
 	private String 	duplicationCheckedId= null;
 	// 프레임 생성자
 	public MembershipFrame() {
+		// 프레임창 setting
+		List<Image> icons = new ArrayList<Image>();
+		icons.add(new ImageIcon("images/logo_small_16.png").getImage());
+		icons.add(new ImageIcon("images/logo_small_32.png").getImage());
+		this.setIconImage(icons.get(0));
 		// frame setting
 		panels.add(logoPanel);
 		panels.add(idPanel);
@@ -106,6 +115,7 @@ public class MembershipFrame extends JFrame {
 		for (JPanel panel : panels) {
 			mainPanel.add(panel);
 			panel.setBackground(backGroundColor);
+//			panel.setForeground(Color.WHITE);
 		}
 		// logo panel setting(1 panel)
 		JLabel logoLabel = new JLabel();
@@ -117,10 +127,11 @@ public class MembershipFrame extends JFrame {
 		idfield.setLocation(5, 5);
 		PromptSupport.setPrompt(id, idfield);
 //		idPanel.setLayout(new BorderLayout());
-		Border fieldBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, true);
+		Border fieldBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY, 3, true);
 		idfield.setSize(fieldSize);
 		idfield.setFont(grayFont);
 		idfield.setBorder(fieldBorder);
+//		idfield.setBackground(Color.WHITE);
 		idfield.setPreferredSize(idfield.getSize());
 		idDuplicationBtn.setBackground(backGroundColor);
 		idPanel.add(idfield);
@@ -128,11 +139,13 @@ public class MembershipFrame extends JFrame {
 		idDuplicationBtn.setPreferredSize(new Dimension(60, 27));
 		idDuplicationBtn.setFont(new Font("dialog", Font.PLAIN, 10));
 		idDuplicationBtn.setText("중복확인");
+		
 		idDuplicationBtn.addActionListener(new idDuplicationCheck());
 		idPanel.add(idDuplicationBtn);
 		// password panel setting( 3 panel)
 		passwordfield.setEchoChar('*');
 		passwordfield.setFont(grayFont);
+//		passwordfield.setBackground(Color.WHITE);
 		passwordfield.setBorder(fieldBorder);
 		passwordfield.setSize(fieldSize);
 		passwordfield.setPreferredSize(passwordfield.getSize());
@@ -143,6 +156,7 @@ public class MembershipFrame extends JFrame {
 		passwordCheckPanel.setSize(380, 25);
 		passwordCheckPanel.setPreferredSize(passwordCheckPanel.getSize());
 		passwordCheckfield.setEchoChar('*');
+//		passwordCheckfield.setBackground(Color.WHITE);
 		passwordCheckfield.setFont(grayFont);
 		passwordCheckfield.setBorder(fieldBorder);
 		passwordCheckfield.setSize(fieldSize);
@@ -155,6 +169,7 @@ public class MembershipFrame extends JFrame {
 		overlapCheckPanel.setPreferredSize(overlapCheckPanel.getSize());
 		// name and checkbox panel setting(6panel)
 		nameTextfield.setFont(grayFont);
+//		nameTextfield.setBackground(Color.WHITE);
 		nameTextfield.setBorder(fieldBorder);
 		nameTextfield.setSize(100, 27);
 		nameTextfield.setPreferredSize(nameTextfield.getSize());
@@ -260,10 +275,10 @@ public class MembershipFrame extends JFrame {
 	class idDuplicationCheck implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			if (idfield.getText().equals("")) {
-				NullWarning.showMessageDialog(idfield, "아이디를 입력하셔야죠 ^^;");
+				NullWarning.showMessageDialog(idfield, "아이디를 입력하셔야죠 ^^;","아이디 입력",JOptionPane.WARNING_MESSAGE);
 			}
 			if(!userDao.idDuplicationCheckDao(idfield.getText())){
-				NullWarning.showMessageDialog(idfield, "이미 존재하는 아이디입니다.");
+				NullWarning.showMessageDialog(idfield, "이미 존재하는 아이디입니다.","아이디 중복!",JOptionPane.WARNING_MESSAGE);
 				isIdDuplicationCheck = false;
 			}else{
 				isIdDuplicationCheck = true;
@@ -275,24 +290,24 @@ public class MembershipFrame extends JFrame {
 	
 	class joinResult implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			if (!isIdDuplicationCheck && duplicationCheckedId.equals(idfield.getText())) {
-				NullWarning.showMessageDialog(idfield, "아이디 중복확인 하세요!");
+			if (!isIdDuplicationCheck && !duplicationCheckedId.equals(idfield.getText())) {
+				NullWarning.showMessageDialog(idfield, "아이디 중복확인 하세요!","아이디 중복확인",JOptionPane.WARNING_MESSAGE);
 			}
 			else if (passwordfield.getText().equals("")) {
-				NullWarning.showMessageDialog(idfield, "비밀번호 안넣으셨어요!!");
+				NullWarning.showMessageDialog(idfield, "비밀번호 안넣으셨어요!!","비밀번호 입력",JOptionPane.WARNING_MESSAGE);
 			}
 			else if (nameTextfield.getText().equals("")) {
-				NullWarning.showMessageDialog(idfield, "이름을 안넣으셨어요!!");
+				NullWarning.showMessageDialog(idfield, "이름을 안넣으셨어요!!","이름 입력",JOptionPane.WARNING_MESSAGE);
 			}
 			else if (checkSexReuslt == 2) {
-				NullWarning.showMessageDialog(idfield, "성별 입력 확인하세요!");
+				NullWarning.showMessageDialog(idfield, "성별 입력 확인하세요!","성별 입력",JOptionPane.WARNING_MESSAGE);
 			}
 			else if (monthCombo.getSelectedIndex() == 0) {
-				NullWarning.showMessageDialog(idfield, "날짜 입력 확인하세요!");
+				NullWarning.showMessageDialog(idfield, "날짜 입력 확인하세요!","월 입력",JOptionPane.WARNING_MESSAGE);
 			}
 
 			else if (dayCombo.getSelectedIndex() == 0) {
-				NullWarning.showMessageDialog(idfield, "날짜 입력 확인하세요!");
+				NullWarning.showMessageDialog(idfield, "날짜 입력 확인하세요!","일 입력",JOptionPane.WARNING_MESSAGE);
 			}
 			
 			if (!idfield.getText().equals("") && !passwordfield.getText().equals("")
@@ -304,8 +319,9 @@ public class MembershipFrame extends JFrame {
 
 				UserDAO memberDAO = new UserDAO();
 				if (memberDAO.joinMember(memberInfos.get(idfield.getText()))) {
-					NullWarning.showMessageDialog(joinbtnPanel, "가입완료!!");
+					NullWarning.showMessageDialog(joinbtnPanel, "가입완료!!","가입 완료",JOptionPane.INFORMATION_MESSAGE);
 					dispose();
+					LoginFrame lf = new LoginFrame();
 					// 로그인창은 꺼지지 않아야 합니다.
 
 				}
