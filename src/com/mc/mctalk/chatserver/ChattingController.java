@@ -83,14 +83,23 @@ public class ChattingController {
 	public void openChattingRoom(String roomID){
 		System.out.println(TAG + "openChattingRoom()");
 		ChattingRoomVO roomVO = dao.getChatRoomVO(roomID);
+		try{
 		ChattingFrame openedChattingGUI = client.getHtChattingGUI(roomID);
 		
 		//채팅방 오픈 여부에 따른 분기 처리
 		if(openedChattingGUI == null){
+			System.out.println("진행확인");
 			ChattingFrame cf = new ChattingFrame(client, roomVO);
+			System.out.println("진행확인");
 		}else{
+			System.out.println("진행확인");
 			openedChattingGUI.requestFocus();
+			System.out.println("진행확인");
 			openedChattingGUI.setState(java.awt.Frame.NORMAL);
+			System.out.println("진행확인");
+		}
+		}catch(NullPointerException e){
+			System.out.println("널포인트 익셉션 난고야? ");
 		}
 	}
 }
