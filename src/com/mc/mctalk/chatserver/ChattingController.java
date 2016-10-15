@@ -35,6 +35,7 @@ public class ChattingController {
 	
 	//다중선택시 오버로딩
 	public ChattingController(ChattingClient client, LinkedHashMap<String, UserVO> selectedFriends) {
+		this.client = client;
 		this.loginID = client.getLoginUserVO().getUserID();
 		this.selectedFriends = selectedFriends;
 		String roomID = make1onNChattingRoom(false);
@@ -57,7 +58,7 @@ public class ChattingController {
 	public String make1onNChattingRoom(boolean is1on1){
 		String roomID = dao.makeChattingRoom(loginID, selectedFriends, is1on1);
 		if(roomID!=null){
-			System.out.println(roomID);
+			System.out.println(TAG + "make1onNChattingRoom()");
 			dao.addUserToChattingRoom(roomID, loginID);
 			Iterator<Entry<String, UserVO>> entry = selectedFriends.entrySet().iterator();
 			for(int i=0; i<selectedFriends.size();i++){
