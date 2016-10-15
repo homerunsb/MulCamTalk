@@ -26,6 +26,8 @@ public class UserDAO {
 			+"WHERE user_id NOT IN (SELECT rel_user_id from user_relation WHERE user_id = ?) "
 			+"and user_id != ?"
 			+"and user_name like ? ";
+	private String idDuplicationCheckSQL = "SELECT user_id FROM users";
+	
 	
 	
 	// 회원가입
@@ -134,6 +136,32 @@ public class UserDAO {
 		}
 		return id_result;
 	}
+	// 아이디중복 확인!!! 
+	public boolean idDuplicationCheckDao(String id) {
+		boolean check = true;
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rst = null;
+
+		try {
+			conn = JDBCUtil.getConnection();
+			stmt = conn.prepareStatement(idDuplicationCheckSQL); // SQL 미리 컴파일,인수값 공간
+			rst = stmt.executeQuery(); // 쿼리 Execute
+			while (rst.next()) { // 결과 집합에서 다음 레코드로 이동
+				if(rst.getString(1).equals(id)){
+					check = false;
+					//중복되는 것이있다면 false값 리턴 
+				}
+			}
+		} catch (SQLException e) {
+			System.out.println("login e : " + e);
+		} finally {
+			JDBCUtil.close(rst, stmt, conn);
+		}
+		return check;
+	}
+	
+	
 	
 	//친구 목록 불러오기
 	public Map<String, UserVO> getAllFriendsMap(String id){
