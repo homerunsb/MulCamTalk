@@ -1,19 +1,15 @@
 package com.mc.mctalk.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import javax.swing.border.EtchedBorder;
 
 /*
@@ -23,7 +19,6 @@ import javax.swing.border.EtchedBorder;
 
 public class SettingPanel extends JPanel {
 private JPanel mainPanel = new JPanel();
-	
 	private JPanel accountPanel = new JPanel();
 	private JLabel accountLabel = new JLabel("내 계정");
 	private JButton logoutBtn = new JButton("로그아웃");
@@ -43,6 +38,8 @@ private JPanel mainPanel = new JPanel();
 	
 	private EtchedBorder eBorder = new EtchedBorder(EtchedBorder.RAISED);
 	
+
+	
 	public SettingPanel()
 	{		
 		//계정 패널(서브패널)
@@ -56,6 +53,23 @@ private JPanel mainPanel = new JPanel();
 		profilePanel.add(profileLabel);
 		profileInPanel.add(nameChangeBtn);
 		profileInPanel.add(messageChangeBtn);
+		messageChangeBtn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				if(e.getSource()==messageChangeBtn){
+					int returnVal = fileChooser.showOpenDialog(mainPanel);
+					if(returnVal== fileChooser.APPROVE_OPTION){
+						fileChooser.getSelectedFile();
+						System.out.println(System.getProperty("user.dir"));
+						
+					}else{
+						
+					}
+				}
+			}
+		});
 		profilePanel.add(profileInPanel);
 		profilePanel.setBorder(eBorder);
 		mainPanel.add(profilePanel);
