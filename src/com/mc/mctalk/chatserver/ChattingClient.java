@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 import com.google.gson.Gson;
@@ -96,7 +98,8 @@ public class ChattingClient {
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				stopClient();
+//				e.printStackTrace();
 			}
 		}
 	}
@@ -122,7 +125,7 @@ public class ChattingClient {
 				messageVO.setSendUserID(loginUserID);
 				messageVO.setSendUserName(loginUserVO.getUserName());
 				messageVO.setMessage(msg);
-				//messageVO.setSendTime();
+				messageVO.setSendTime(getCurrentTimeForMsg());
 				
 				//Json 으로 변환 후 개행 치환 처리
 				//그대로 보내면 서버에서 readLine으로 잘라서 인식해 버리므로
@@ -140,16 +143,11 @@ public class ChattingClient {
 		}
 	}// send() 메소드 종료	
 
-	//필요성 확인 필요 프레임 닫을시에 기존에 추가된 맵들은 따로 삭제 해줄 필요가 없나?
-	public void doWhenUserCloseChattingFrame(){
-		//삭제 htChattingGUI
-		//삭제 htRoomVO
-	}
-	
 	//로그 아웃시 연결 필요
 	public void stopClient(){
 		try {
 			if(socket!=null && !socket.isClosed()){
+				System.out.println(TAG + "stopClient()");
 				socket.close();
 			}
 		} catch (IOException e) {
@@ -161,10 +159,20 @@ public class ChattingClient {
 		return loginUserVO;
 	}
 	public ChattingFrame getHtChattingGUI(String roomID) {
+		System.out.println(TAG + "getHtChattingGUI()");
 		ChattingFrame returnCf = htChattingGUI.get(roomID);
 		return returnCf;
 	}
 	public void removeHtChattingGUI(String roomID) {
+		System.out.println(TAG + "removeHtChattingGUI()");
 		htChattingGUI.remove(roomID);
+	}
+	
+	//메시지 전송 시간 구하기
+	public String getCurrentTimeForMsg(){
+		long time = System.currentTimeMillis(); 
+		SimpleDateFormat dayTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String strTime = dayTime.format(new Date(time));
+		return strTime;
 	}
 }

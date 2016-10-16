@@ -2,6 +2,8 @@ package com.mc.mctalk.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -35,7 +37,11 @@ public class LoginFrame extends JFrame {
 
 	public LoginFrame() {
 		setLayout(null);
-
+		// 창 화면 중간에 띄우기
+		Dimension frameSize = this.getSize();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation((screenSize.width - frameSize.width-300)/2, (screenSize.height - frameSize.height-600)/2);
+		
 		ImageIcon m = new ImageIcon("images/logo.png");
 		labelLogo.setIcon(m);
 		logoPanel.add(labelLogo);

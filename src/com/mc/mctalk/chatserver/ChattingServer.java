@@ -71,8 +71,7 @@ public class ChattingServer {
 				htThreadList.put(userVO.getUserID(), t);
 
 				System.out.println("[서버] 생성된 스레드 수 : " + htThreadList.size());
-				System.out.println("[서버] 접속한 사용자 수 : " + htConnectedUsers.size());
-				
+//				System.out.println("[서버] 접속한 사용자 수 : " + htConnectedUsers.size());
 				executorService.submit(t);
 			}
 		} catch (IOException e) {
@@ -102,7 +101,6 @@ public class ChattingServer {
 				for (int i = 0; i < userList.size(); i++) {
 	//				System.out.println("받은 방 유저 리스트 : " + userList.get(i));
 					try{
-						System.out.println(userList.get(i));
 						htThreadList.get(userList.get(i)).sendToClient(msg);
 					}catch (NullPointerException e){
 						System.out.println("NullPointerException");
@@ -150,7 +148,6 @@ public class ChattingServer {
 		@Override
 		public void run() {
 			System.out.println(TAG + "run()");
-
 			try {
 //				broadcast("["+userName+"]님이 입장하셨습니다.");
 				while(true){
@@ -168,10 +165,8 @@ public class ChattingServer {
 		//현재 쓰레드가 담당하는 클라이언트에게 메시지 보내기
 		public void sendToClient(String msg) throws IOException{
 			System.out.println(TAG + "sendToClient()");
-
-			
-				bw.write(msg+"\n");
-				bw.flush();
+			bw.write(msg+"\n");
+			bw.flush();
 			
 		}//senToClient()
 	}//Class chattingThread

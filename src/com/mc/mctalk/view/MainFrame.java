@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -42,9 +43,15 @@ public class MainFrame extends JFrame {
 	
 	public MainFrame(ChattingClient client) {
 		System.out.println(TAG + "MainFrame()");
-		this.client = client;
+		//화면 중간에 띄우기
+		Dimension frameSize = this.getSize();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation((screenSize.width - frameSize.width-300)/2, (screenSize.height - frameSize.height-600)/2);
+		
+		//로고 설정
 		LogoManager.setLogoFrame(this);
 		
+		this.client = client;
 		loginID = client.getLoginUserVO().getUserID();
 		pCover = new JPanel();
 		pMainMenu = new MainMenuPanel(this, client);
@@ -133,6 +140,7 @@ public class MainFrame extends JFrame {
 			if(button == btnMinimize){
 				setExtendedState(JFrame.ICONIFIED);
 			}else if(button == btnClose){
+				client.stopClient();
 				System.exit(0);
 //				int isExit = JOptionPane.showConfirmDialog(getContentPane(), "종료하시겠습니까?", "종료", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null);
 //    			if(isExit==0){
@@ -165,22 +173,18 @@ public class MainFrame extends JFrame {
 }
 
 class FrameDragListener extends MouseAdapter {
-
 	private final JFrame frame;
 	private Point mouseDownCompCoords = null;
 
 	public FrameDragListener(JFrame frame) {
 		this.frame = frame;
 	}
-
 	public void mouseReleased(MouseEvent e) {
 		mouseDownCompCoords = null;
 	}
-
 	public void mousePressed(MouseEvent e) {
 		mouseDownCompCoords = e.getPoint();
 	}
-
 	public void mouseDragged(MouseEvent e) {
 		Point currCoords = e.getLocationOnScreen();
 		frame.setLocation(currCoords.x - mouseDownCompCoords.x, currCoords.y - mouseDownCompCoords.y);
