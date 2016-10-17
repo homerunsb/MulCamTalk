@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -12,9 +13,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import com.mc.mctalk.chatserver.ChattingClient;
+
 /*
  * 담당자 : 정대용
  * 수정 필요 사항 : 객체 크기 조절, 기능 구현
+ * 추가작업 : (김영태) 2016.10.16 세팅패널 클라이언트 객체로 받을 수 있게 생성자 작업. 파일전송 액션리스너 작성. 
  */
 
 public class SettingPanel extends JPanel {
@@ -36,12 +40,18 @@ private JPanel mainPanel = new JPanel();
 	private JButton alramOffBtn = new JButton("끄기");
 	
 	
+	private ChattingClient client ;
+	
 	private EtchedBorder eBorder = new EtchedBorder(EtchedBorder.RAISED);
 	
 
 	
-	public SettingPanel()
+	public SettingPanel(ChattingClient client)
 	{		
+		
+		this.client = client;
+		//
+		
 		//계정 패널(서브패널)
 		accountPanel.add(accountLabel, BorderLayout.CENTER);
 		accountPanel.add(logoutBtn);
@@ -61,8 +71,12 @@ private JPanel mainPanel = new JPanel();
 				if(e.getSource()==messageChangeBtn){
 					int returnVal = fileChooser.showOpenDialog(mainPanel);
 					if(returnVal== fileChooser.APPROVE_OPTION){
-						fileChooser.getSelectedFile();
-						System.out.println(System.getProperty("user.dir"));
+						String imagesDirPath= System.getProperty("user.dir"+"/images");
+						File selectImgFile =fileChooser.getSelectedFile();
+						
+						
+						System.out.println(fileChooser.getSelectedFile().getPath());
+						System.out.println(imagesDirPath);
 						
 					}else{
 						

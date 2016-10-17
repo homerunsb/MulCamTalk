@@ -26,7 +26,7 @@ public class UserDAO {
 			+"WHERE user_id NOT IN (SELECT rel_user_id from user_relation WHERE user_id = ?) "
 			+"and user_id != ?"
 			+"and user_name like ? ";
-	private String idDuplicationCheckSQL = "SELECT user_id FROM users";
+	private String idDuplicationCheckSQL = "SELECT user_id FROM users WHERE user_id =? ";
 	
 	
 	
@@ -145,7 +145,9 @@ public class UserDAO {
 
 		try {
 			conn = JDBCUtil.getConnection();
-			stmt = conn.prepareStatement(idDuplicationCheckSQL); // SQL 미리 컴파일,인수값 공간
+			stmt = conn.prepareStatement(idDuplicationCheckSQL); 
+			stmt.setString(1, id);
+			// SQL 미리 컴파일,인수값 공간
 			rst = stmt.executeQuery(); // 쿼리 Execute
 			while (rst.next()) { // 결과 집합에서 다음 레코드로 이동
 				if(rst.getString(1).equals(id)){

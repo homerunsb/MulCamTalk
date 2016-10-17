@@ -1,15 +1,28 @@
 package com.mc.mctalk.chatserver;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 import java.util.Hashtable;
 import java.util.Map;
+
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.FileImageOutputStream;
+
 import com.google.gson.Gson;
 import com.mc.mctalk.view.ChattingFrame;
 import com.mc.mctalk.vo.ChattingRoomVO;
@@ -19,8 +32,8 @@ import com.mc.mctalk.vo.UserVO;
 public class ChattingClient {
 	private String TAG = "ChattingClient : ";
 	private Socket socket = null;
-//	final private String SERVER_IP= "127.0.0.1";
-	final private String SERVER_IP= "70.12.109.103";
+	final private String SERVER_IP= "127.0.0.1";
+//	final private String SERVER_IP= "70.12.109.103";
 	final private int SERVER_PORT= 8888;
 
 	private BufferedWriter bw = null;
@@ -111,6 +124,37 @@ public class ChattingClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void sendImg(File img){
+		// 프로필사진을 나만 보는 것이아니라 모든사람이 봐야하는것. 즉 서버에서 이미지를 보내주어야 한다....
+		
+		// 파일을 프로그램으로 스트림으로만들어 읽어들인다.
+		try{
+		InputStream encodedFile = new FileInputStream(img);
+		// 파일을 바이트 어레이 아웃풋스트림으로 바꿔놓는다. 
+		ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+		int len =0 ;
+		byte[] fileGetByte = new byte[1024];
+		// 읽어들인 파일을 1메가단위의 버퍼를 이용해서 완료될때 까지 와일문 반복시킨다 
+		while((len=encodedFile.read(fileGetByte))!=-1){
+			// 이 문법은 좀더 공부를 해봐야겟다 
+			// 라이트의 개념이 바로바로 보내는 건지 그냥 메모리에 소유 하고 있는지가 궁금하다 .
+			byteOutStream.write(fileGetByte, 0, len);
+		}
+		Encoder base64EnCoder =  Base64.getEncoder();
+		byte[] fileArray =byteOutStream.toByteArray();
+		
+		String encodedString  = base64EnCoder.encodeToString(fileArray);
+		}catch(Exception e){
+			
+		}
+		// 파일 인코딩 완료 . 
+		
+		
+		
+		
+		
 	}
 	
 	
