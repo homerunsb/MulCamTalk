@@ -1,15 +1,15 @@
 package com.mc.mctalk.view;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,6 +29,7 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
+import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.dao.UserDAO;
 import com.mc.mctalk.view.uiitem.CustomJScrollPane;
 import com.mc.mctalk.view.uiitem.RoundedImageMaker;
@@ -62,9 +63,9 @@ public class FriendsAddFrame extends JFrame {
 	private JPanel thirdPanel = new JPanel(); //하단 패널
 	private JButton addBtn = new JButton("친구추가");
 	
-	private Map<String, UserVO> mapFriends = new LinkedHashMap<>();
+	private Map<String, UserVO> mapFriends;
 	private RoundedImageMaker imageMaker = new RoundedImageMaker();
-
+	
 	public FriendsAddFrame(){
 		initPanel();
 		
@@ -96,7 +97,7 @@ public class FriendsAddFrame extends JFrame {
 		//하단 패널
 		thirdPanel.add(addBtn);
 		addBtn.setPreferredSize(new Dimension(270, 30));
-		addBtn.addActionListener(new MemberSearchListener());
+		addBtn.addActionListener(new MemberAddListener());
 		add(thirdPanel, BorderLayout.SOUTH);
 		
 		this.setTitle("친구 추가");
@@ -182,21 +183,41 @@ public class FriendsAddFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			if(e.getSource() == addBtn)
-			{
-				UserDAO udo = new UserDAO();
-			}
-			if(e.getSource() == searchBtn)
-			{
-				UserDAO udo = new UserDAO();
-				mapFriends = new LinkedHashMap<String, UserVO>();
-				mapFriends = udo.SearchMember(nameField.getText().toString(), nameField.getText().toString());
-				searchFriendsMap();
-				addElementToJList();
-//				System.out.println(listModel);
-			}
+
+			//로그인하자마자 로그인 ID 변수 소멸
+			//MemberAddListener도 마찬가지
+			UserDAO udo = new UserDAO();
+			UserVO vo = new UserVO();
+			ChattingClient client = new ChattingClient(vo);
+			mapFriends = new LinkedHashMap<String, UserVO>();
+			mapFriends = udo.SearchMember(client.getLoginUserVO().getUserID(), nameField.getText().toString());
+			searchFriendsMap();
+			addElementToJList();
+			System.out.println(listModel);
+			String s = vo.getUserID();
+			System.out.println();
+			System.out.println(client.getLoginUserVO().getUserID());
 		}
 		
+	}
+	
+	class MemberAddListener implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			UserDAO udo = new UserDAO();
+			UserVO vo = new UserVO();
+			ChattingClient client = new ChattingClient(vo);
+			String c = (listModel.getElementAt(searchList.getSelectedIndex())).toString();
+			int i = c.indexOf("=");
+			int j = c.indexOf(",");
+			String userId = c.substring(i+1, j);
+			System.out.println();
+			
+			
+//			udo.AddFriend(userId, client.getLoginUserVO().toString());
+		}
 	}
 	
 	//JList 모양 변경

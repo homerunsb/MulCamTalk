@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.view.FriendsAddFrame;
+import com.mc.mctalk.view.LoginFrame;
 import com.mc.mctalk.vo.UserVO;
 
 public class UserDAO {
@@ -27,7 +28,7 @@ public class UserDAO {
 			+"WHERE user_id NOT IN (SELECT rel_user_id from user_relation WHERE user_id = ?) "
 			+"and user_id != ? "
 			+"and user_name like ? ";
-	private String memberAddSQL = "INSERT into user_relation (user_id, rel_user_id) "
+	private String memberAddSQL = "INSERT into user_relation (user_id,rel_user_id) "
 			+ "values(?,?)";
 	
 	
@@ -147,10 +148,10 @@ public class UserDAO {
 	}
 	
 	//친구추가
-	public Map<String, UserVO> AddFriend(String rel_user_id) {
-		System.out.println(TAG + "SearchMember()");
+	public Map<String, UserVO> AddFriend(String addId, String loginId) {
+		System.out.println(TAG + "AddFriend()");
 		String id_result = null;
-		Map<String, UserVO> searchMap = new LinkedHashMap<String, UserVO>();
+		Map<String, UserVO> addMap = new LinkedHashMap<String, UserVO>();
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -161,22 +162,26 @@ public class UserDAO {
 			conn = JDBCUtil.getConnection();
 			stmt = conn.prepareStatement(memberAddSQL); // SQL 미리 컴파일,인수값 공간
 															// 사전 확보
-			stmt.setString(1, vo.getUserID()); //사용자 ID
-			stmt.setString(2, rel_user_id); //추가할 친구 ID(FriendsAddFrame의 listModel에서 rel_user_id만 따서 매개변수로 사용
+			stmt.setString(1, addId); //등록할 ID
+			stmt.setString(2, loginId); //추가할 친구 ID(FriendsAddFrame의 listModel에서 rel_user_id만 따서 매개변수로 사용
 			rst = stmt.executeQuery(); // 쿼리 Execute
 
 			while (rst.next()) { // 결과 집합에서 다음 레코드로 이동
 				vo = new UserVO();
 				vo.setUserID(rst.getString("user_id"));
-				searchMap.put(vo.getUserID(), vo);
-				System.out.println(searchMap.toString());
+				addMap.put(vo.getUserID(), vo);
+				System.out.println(addMap.toString());
 			}
 		} catch (SQLException e) {
 			System.out.println("login e : " + e);
-		} finally {
+		} catch (NullPointerException e)
+		{
+			System.out.println("null e : " + e);
+		}
+			finally {
 			JDBCUtil.close(rst, stmt, conn);
 		}
-		return searchMap;
+		return addMap;
 	} 
 	
 	//친구 목록 불러오기
