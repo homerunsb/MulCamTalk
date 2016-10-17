@@ -40,6 +40,7 @@ import javax.swing.text.StyledDocument;
 import com.google.gson.Gson;
 import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.view.uiitem.CustomJScrollPane;
+import com.mc.mctalk.view.uiitem.NotificationAlarmPlayer;
 import com.mc.mctalk.vo.ChattingRoomVO;
 import com.mc.mctalk.vo.MessageVO;
 import com.mc.mctalk.vo.UserVO;
@@ -288,9 +289,23 @@ public class ChattingFrame extends JFrame {
 		}
 		
 		try {
-			if(isLoginID != true){
+			if(isLoginID != true){//상대방 메시지일 경우
 				doc.insertString(doc.getLength(), sendUserName+"\n", sasSendUser); // 상대방 아이디 넣기
 				doc.setParagraphAttributes((doc.getLength() - sendUserName.length()), doc.getLength(), sasSendUser, false); // 서식 지정하기
+				
+				//메시지 알람 재생
+				Thread alarmThread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						NotificationAlarmPlayer ap = new NotificationAlarmPlayer();
+				        try {
+				        	ap.playAudioFile();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}	
+					}
+				});
+				alarmThread.start();
 			}
 			doc.insertString(doc.getLength(), insertedMsg, leftOrRight); // 메시지 넣기
 			doc.insertString(doc.getLength() - minusLength, formattedTime, sasTime); // 시간 넣기
@@ -298,7 +313,7 @@ public class ChattingFrame extends JFrame {
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
-
+		
 		taChatInPut.setText(""); // 채팅입력창 초기화
 		
 		//추가할 사항
