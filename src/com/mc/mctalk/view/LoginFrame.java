@@ -19,6 +19,8 @@ import javax.swing.JTextField;
 import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.dao.UserDAO;
 import com.mc.mctalk.view.MainMenuPanel.MenuButtonActionListener;
+import com.mc.mctalk.view.uiitem.CustomTitlebar;
+import com.mc.mctalk.view.uiitem.LogoManager;
 import com.mc.mctalk.vo.UserVO;
 
 public class LoginFrame extends JFrame {
@@ -35,12 +37,21 @@ public class LoginFrame extends JFrame {
 
 	private JPanel logoPanel = new JPanel();
 
+
 	public LoginFrame() {
 		setLayout(null);
+		new LogoManager().setLogoFrame(this);
+
 		// 창 화면 중간에 띄우기
 		Dimension frameSize = this.getSize();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation((screenSize.width - frameSize.width-300)/2, (screenSize.height - frameSize.height-600)/2);
+		
+		this.setUndecorated(true);
+		CustomTitlebar ct = new CustomTitlebar(this, null);
+		ct.setBounds(0, 0, 380, 36);
+		add(ct);
+		
 		
 		ImageIcon m = new ImageIcon("images/logo.png");
 		labelLogo.setIcon(m);
