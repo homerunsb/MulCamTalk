@@ -34,7 +34,6 @@ public class LoginFrame extends JFrame {
 	private JButton joinbtn = new JButton("가입");
 	private JButton findPWBtn = new JButton("PW찾기");
 	private JButton findIDBtn = new JButton("ID찾기");
-
 	private JPanel logoPanel = new JPanel();
 
 
