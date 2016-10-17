@@ -5,6 +5,9 @@ import java.util.List;
 
 public class ChattingRoomVO {
 	private String chattingRoomID = null, chattingRoomName = null;
+	private int userCount = 0;
+	private String lastMsgContent = null, lasMsgSendTime = null;
+	private int unReadMsgCount = 0;
 	private List<String> chattingRoomUserIDs =  new ArrayList<String>();
 	
 	public String getChattingRoomID() {
@@ -25,10 +28,35 @@ public class ChattingRoomVO {
 	public void setChattingRoomUserIDs(List<String> chattingRoomUserIDs) {
 		this.chattingRoomUserIDs = chattingRoomUserIDs;
 	}
+	public int getUserCount() {
+		return userCount;
+	}
+	public void setUserCount(int userCount) {
+		this.userCount = userCount;
+	}
+	public String getLastMsgContent() {
+		return lastMsgContent;
+	}
+	public void setLastMsgContent(String lastMsgContent) {
+		this.lastMsgContent = lastMsgContent;
+	}
+	public String getLasMsgSendTime() {
+		return lasMsgSendTime;
+	}
+	public void setLasMsgSendTime(String lasMsgSendTime) {
+		this.lasMsgSendTime = lasMsgSendTime;
+	}
+	public int getUnReadMsgCount() {
+		return unReadMsgCount;
+	}
+	public void setUnReadMsgCount(int unReadMsgCount) {
+		this.unReadMsgCount = unReadMsgCount;
+	}
 	@Override
 	public String toString() {
 		return "ChattingRoomVO [chattingRoomID=" + chattingRoomID + ", chattingRoomName=" + chattingRoomName
-				+ ", chattingRoomUserIDs=" + chattingRoomUserIDs + "]";
+				+ ", userCount=" + userCount + ", lastMsgContent=" + lastMsgContent + ", lasMsgSendTime="
+				+ lasMsgSendTime + ", unReadMsgCount=" + unReadMsgCount + ", chattingRoomUserIDs=" + chattingRoomUserIDs
+				+ "]";
 	}
-	
 }

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.mc.mctalk.vo.ChattingRoomVO;
@@ -49,8 +50,16 @@ public class ChattingRoomDAO {
 	private String insertMessageToDBSQL = "INSERT INTO messages (room_id,msg_sent_user_id,"
 			+ "msg_content,msg_sent_time) values (? ,? ,? ,?)";
 	private String insertDisconnClientSQL = "INSERT INTO disconn_client (msg_id,disconn_client_id) "
-			+ "values (?,?)"; // 영태가 작업중...
-	
+			+ "values (?,?)"; 
+	private String searchChatRoomListSQL =  "SELECT cr.room_id, cr.room_name, cru.user_cnt, ms.msg_content last_msg_content, ms.msg_sent_time last_msg_sent_time, dc.unread_msg_cnt "
+														  + "FROM chat_rooms cr, "
+														  + "	  (select room_id, count(user_id) user_cnt from chat_room_users where cru_left_time is null "
+														  + "		and room_id in (select room_id from chat_room_users where user_id = ?) group by room_id) cru, "
+														  + "	  (select msg_id, room_id, msg_content, msg_sent_time from messages group by room_id order by msg_sent_time desc) ms, "
+														  + "	  (select ms.room_id, count(ms.msg_id) unread_msg_cnt from disconn_client dc, messages ms	where dc.msg_id = ms.msg_id group by ms.room_id) dc "
+														  + "WHERE cr.room_id = cru.room_id "
+														  + "AND	cr.room_id = ms.room_id "
+														  + "AND	cr.room_id = dc.room_id ";
 	
 	//접속하지 않은 유저에게 메시지 전송시 관련 정보 입력
 	public void insertDiconnClient(String msg_id, String disconnClient){
@@ -173,36 +182,6 @@ public class ChattingRoomDAO {
 		return roomID;
 	}
 	
-//	public String make1on1ChattingRoom(String loginID, String friendID){
-//	System.out.println(TAG + "make1on1ChattingRoom()");
-//	String roomID = null;
-//	
-//	Connection conn = null;
-//	PreparedStatement stmt = null;
-//	ResultSet rst = null;
-//	try{
-//		conn = JDBCUtil.getConnection();
-//		stmt = conn.prepareStatement(make1on1ChattingRoomSQL, Statement.RETURN_GENERATED_KEYS);
-//		stmt.setString(1, loginID+"/"+friendID); 
-//		int cnt = stmt.executeUpdate();
-//
-//		if(cnt > 0){
-//			rst = stmt.getGeneratedKeys();
-//			if(rst.next()){
-//				System.out.println("Chat Room Insert Success");
-//				roomID = rst.getString(1);
-//				System.out.println("만들어진 방 ID : " + roomID);
-//			}
-//		}		
-//	}catch(SQLException e){
-//		System.out.println("make1on1ChattingRoom e : " + e);
-//	}finally {
-//		JDBCUtil.close(rst,stmt, conn);
-//	}
-//	return roomID;
-//}
-	
-	
 	//채팅방에 참여하는 유저 추가하기
 	public boolean addUserToChattingRoom(String roomID, String userID){
 		System.out.println(TAG + "addUserToChattingRoom()");
@@ -229,6 +208,44 @@ public class ChattingRoomDAO {
 			JDBCUtil.close(rst,stmt, conn);
 		}
 		return isSuceed;
+	}
+	
+	
+	//로그인한 유저의 방목록 리스트
+	public Map<String, ChattingRoomVO> getAllChatRoomVOMap(String loginID){
+		System.out.println(TAG + "getAllChatRoomVOMap()");
+		System.out.println("로그인ID : " + loginID);
+		
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rst = null;
+		Map<String, ChattingRoomVO> roomVOMap = new LinkedHashMap<String, ChattingRoomVO>();
+		
+		try{
+			conn = JDBCUtil.getConnection();
+			stmt = conn.prepareStatement(searchChatRoomListSQL);
+			stmt.setString(1, loginID);
+			rst = stmt.executeQuery();
+			
+			while(rst.next()){
+				ChattingRoomVO roomVO = new ChattingRoomVO(); 
+				roomVO.setChattingRoomID(rst.getString(1));
+				roomVO.setChattingRoomName(rst.getString(2));
+				roomVO.setUserCount(rst.getInt(3));
+				roomVO.setLastMsgContent(rst.getString(4));
+				roomVO.setLasMsgSendTime(rst.getString(5));
+				roomVO.setUnReadMsgCount(rst.getInt(6));
+				roomVOMap.put(roomVO.getChattingRoomID(), roomVO);
+			}
+
+			System.out.println("새로만든 룸VO 끌어오기 확인 : " + roomVOMap.size());
+		}catch(SQLException e){
+			System.out.println("getAllChatRoomVOMap e : " + e);
+		}finally {
+			JDBCUtil.close(rst,stmt, conn);
+		}
+		
+		return roomVOMap;
 	}
 	
 	//채팅 참여자 유저 정보를 받아서 최종적으로 RoomVO를 만들어 리턴
