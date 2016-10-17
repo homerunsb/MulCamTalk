@@ -14,6 +14,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -44,24 +45,24 @@ import com.mc.mctalk.vo.MessageVO;
 import com.mc.mctalk.vo.UserVO;
 
 public class ChattingFrame extends JFrame {
-	String TAG = "ChattingFrame : ";
-	Gson gson = new Gson();
-	ChattingClient client;
-	String loginID, roomID;
+	private final String TAG = "ChattingFrame : ";
+	private Gson gson = new Gson();
+	private ChattingClient client;
+	private String loginID, roomID;
 	
-	JPanel pCover = new JPanel();
-	JPanel pChatHistory = new JPanel(); // 채팅 저장해놓은 패널
-	JPanel pChatInput = new JPanel();// 채팅쓰는 패널
-	JButton btnSubmit = new JButton("전송");// 전송버튼
-	JTextPane tpChatHistory = new JTextPane();// 채팅 저장해놓은 판
-	JTextArea taChatInPut = new JTextArea(null, 3, 24);// 채팅 쓰는 판
-	JScrollPane scrollChatInput = new JScrollPane(taChatInPut);//  taInPutChatt 을 붙인 스크롤패널
-	CustomJScrollPane scrollChatHistory;//   historyChatt 에 붙인 스크롤 패널
-	StyledDocument doc = tpChatHistory.getStyledDocument();
-	SimpleAttributeSet sasRight = new SimpleAttributeSet();
-	SimpleAttributeSet sasLeft = new SimpleAttributeSet();
-	SimpleAttributeSet sasTime = new SimpleAttributeSet();
-	SimpleAttributeSet sasSendUser = new SimpleAttributeSet();
+	private JPanel pCover = new JPanel();
+	private JPanel pChatHistory = new JPanel(); // 채팅 저장해놓은 패널
+	private JPanel pChatInput = new JPanel();// 채팅쓰는 패널
+	private JButton btnSubmit = new JButton("전송");// 전송버튼
+	private JTextPane tpChatHistory = new JTextPane();// 채팅 저장해놓은 판
+	private JTextArea taChatInPut = new JTextArea(null, 3, 24);// 채팅 쓰는 판
+	private JScrollPane scrollChatInput = new JScrollPane(taChatInPut);//  taInPutChatt 을 붙인 스크롤패널
+	private CustomJScrollPane scrollChatHistory;//   historyChatt 에 붙인 스크롤 패널
+	private StyledDocument doc = tpChatHistory.getStyledDocument();
+	private SimpleAttributeSet sasRight = new SimpleAttributeSet();
+	private SimpleAttributeSet sasLeft = new SimpleAttributeSet();
+	private SimpleAttributeSet sasTime = new SimpleAttributeSet();
+	private SimpleAttributeSet sasSendUser = new SimpleAttributeSet();
 	
 	public ChattingFrame(ChattingClient client, ChattingRoomVO roomVO) {
 		System.out.println(TAG + "ChattingFrame()");
@@ -70,7 +71,8 @@ public class ChattingFrame extends JFrame {
 		this.roomID = roomVO.getChattingRoomID();
 		this.setSize(380, 550);
 		this.setTitle(roomVO.getChattingRoomName());
-		
+		this.setLocationByPlatform(true);
+
 		pCover.setLayout(new BoxLayout(pCover, BoxLayout.Y_AXIS));
 		this.setBackground(new Color(155, 186, 216));
 		pChatHistory.setBackground(new Color(155, 186, 216));
@@ -127,7 +129,7 @@ public class ChattingFrame extends JFrame {
 	    StyleConstants.setBackground(sasLeft, Color.WHITE);
 	    StyleConstants.setSpaceAbove(sasLeft, 0);
 	    StyleConstants.setSpaceBelow(sasLeft, 0);
-	    StyleConstants.setLeftIndent(sasLeft, 10);
+	    StyleConstants.setLeftIndent(sasLeft, 20);
 //	    StyleConstants.setRightIndent(sasLeft, 10);
 	    StyleConstants.setFontFamily(sasLeft, "Malgun Gothic");
 	    StyleConstants.setBold(sasLeft, false);
@@ -139,7 +141,7 @@ public class ChattingFrame extends JFrame {
 	    StyleConstants.setFontSize(sasSendUser, 13);
 	    StyleConstants.setSpaceAbove(sasSendUser, 10);
 	    StyleConstants.setSpaceBelow(sasSendUser, 2);
-	    StyleConstants.setLeftIndent(sasSendUser, 5);
+	    StyleConstants.setLeftIndent(sasSendUser, 15);
 	    StyleConstants.setFontFamily(sasSendUser, "Malgun Gothic");
 	    StyleConstants.setBold(sasSendUser, true);
 		
@@ -221,10 +223,11 @@ public class ChattingFrame extends JFrame {
 	public void textAreaSetText(String msg) {
 		MessageVO messageVO = gson.fromJson(msg, MessageVO.class);
 		msg = messageVO.getMessage().replace("/n", "\n") + "\n";
+		String msgSendTime = messageVO.getSendTime();
 		
 		// 문자가 길면 개행을 하기 위해 인덱스값으로 인서트가 가능한 스트링 버퍼에 담기
 		StringBuffer msgBuffer = new StringBuffer(msg);
-		if (msgBuffer.length() > 20) { // 채팅 입력의 길이가 33 보다 클 경우 33번째에 개행 추가
+		if (msgBuffer.length() > 20) { // 채팅 입력의 길이가 20 보다 클 경우 개행 추가
 			for (int i = 1; i <= msgBuffer.length() / 20; i++) {
 				msgBuffer.insert(20 * i, "\n");
 			}
@@ -250,10 +253,16 @@ public class ChattingFrame extends JFrame {
 		}
 
 		//메시지 시간
-		long currentTime = System.currentTimeMillis();
-		SimpleDateFormat formatter = new SimpleDateFormat("aahh:mm", Locale.KOREA);
-		Date times = new Date(currentTime);
-		String dTime = formatter.format(times);
+		Date times = null;
+		SimpleDateFormat formatter = null;
+		try {
+			formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			times = formatter.parse(msgSendTime);
+			formatter = new SimpleDateFormat("aahh:mm", Locale.KOREA);
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		String formattedTime = formatter.format(times);
 		
 		// 로그인 ID 여부에 따라 서식 적용
 		SimpleAttributeSet leftOrRight = new SimpleAttributeSet();
@@ -263,7 +272,7 @@ public class ChattingFrame extends JFrame {
 		// 개행 갯수에 따라 시간 붙일 위치(인덱스) 정하기 (오른쪽일 경우)
 		if (isLoginID) { // 나 자신(오른쪽)
 			leftOrRight = sasRight;
-			dTime = dTime + "  ";
+			formattedTime = formattedTime + "  ";
 			//insertedMsg = insertedMsg.split(":")[1]; // 내가 친건 ID 표시 안함
 			// 나 자신일 경우 개행이 있을시 마지막 줄 왼쪽에 시간 붙임
 			if (lineBreakCount > 1) {
@@ -274,7 +283,7 @@ public class ChattingFrame extends JFrame {
 			}
 		} else {// 상대방(왼쪽)
 			leftOrRight = sasLeft;
-			dTime = "  " + dTime;
+			formattedTime = "  " + formattedTime;
 			minusLength = 1; // 0일시 개행이 되버림.
 		}
 		
@@ -284,7 +293,7 @@ public class ChattingFrame extends JFrame {
 				doc.setParagraphAttributes((doc.getLength() - sendUserName.length()), doc.getLength(), sasSendUser, false); // 서식 지정하기
 			}
 			doc.insertString(doc.getLength(), insertedMsg, leftOrRight); // 메시지 넣기
-			doc.insertString(doc.getLength() - minusLength, dTime, sasTime); // 시간 넣기
+			doc.insertString(doc.getLength() - minusLength, formattedTime, sasTime); // 시간 넣기
 			doc.setParagraphAttributes((doc.getLength() - insertedMsg.length()), doc.getLength(), leftOrRight, false); // 서식 지정하기
 		} catch (BadLocationException e) {
 			e.printStackTrace();

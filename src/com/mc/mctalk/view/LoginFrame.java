@@ -2,6 +2,8 @@ package com.mc.mctalk.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -17,6 +19,8 @@ import javax.swing.JTextField;
 import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.dao.UserDAO;
 import com.mc.mctalk.view.MainMenuPanel.MenuButtonActionListener;
+import com.mc.mctalk.view.uiitem.CustomTitlebar;
+import com.mc.mctalk.view.uiitem.LogoManager;
 import com.mc.mctalk.vo.UserVO;
 
 public class LoginFrame extends JFrame {
@@ -30,12 +34,24 @@ public class LoginFrame extends JFrame {
 	private JButton joinbtn = new JButton("가입");
 	private JButton findPWBtn = new JButton("PW찾기");
 	private JButton findIDBtn = new JButton("ID찾기");
-
 	private JPanel logoPanel = new JPanel();
+
 
 	public LoginFrame() {
 		setLayout(null);
+		new LogoManager().setLogoFrame(this);
 
+		// 창 화면 중간에 띄우기
+		Dimension frameSize = this.getSize();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation((screenSize.width - frameSize.width-300)/2, (screenSize.height - frameSize.height-600)/2);
+		
+		this.setUndecorated(true);
+		CustomTitlebar ct = new CustomTitlebar(this, null);
+		ct.setBounds(0, 0, 380, 36);
+		add(ct);
+		
+		
 		ImageIcon m = new ImageIcon("images/logo.png");
 		labelLogo.setIcon(m);
 		logoPanel.add(labelLogo);
