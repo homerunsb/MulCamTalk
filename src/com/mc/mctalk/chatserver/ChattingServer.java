@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import com.google.gson.Gson;
 import com.mc.mctalk.dao.ChattingRoomDAO;
 import com.mc.mctalk.vo.ChattingRoomVO;
+import com.mc.mctalk.vo.FileVO;
 import com.mc.mctalk.vo.MessageVO;
 import com.mc.mctalk.vo.UserVO;
 
@@ -82,45 +83,63 @@ public class ChattingServer {
 	public void broadcast(String msg){
 		System.out.println(TAG + "broadcast()");
 		//받은 메시지 JSON을 파싱하여 메시지의 발송 룸번호를 파악
-		MessageVO messageVO = gson.fromJson(msg, MessageVO.class);
-		ChattingRoomVO roomVO = messageVO.getRoomVO();
-		String roomID = roomVO.getChattingRoomID();
-		// 1.보내기 전에 데이터 베이스에 메세지 정보를 넣는다!!! 메세지 아이디값 반환
-		// 2.메세지에 해당 메세지 아이디를 넣고 다시 제이슨으로 조립후 변수에 담음. 
-		// 3.메시지 ID가 있을 경우는 반송된 메시지, 없을 경우는 새 메시지.
-		try{		
-			String msgID = chatdao.insertMessageToDB(messageVO);
-			messageVO.setMessageID(msgID);
-			msg = gson.toJson(messageVO);
-			ArrayList userList = null;
-			if(roomVO!=null){
-				userList = (ArrayList) roomVO.getChattingRoomUserIDs();
-	//			System.out.println("서버 받은 ArrayList : " + userList.size());
-			}
-			if(userList.size()>0){
-				for (int i = 0; i < userList.size(); i++) {
-	//				System.out.println("받은 방 유저 리스트 : " + userList.get(i));
-					try{
-						htThreadList.get(userList.get(i)).sendToClient(msg);
-					}catch (NullPointerException e){
-						System.out.println("NullPointerException");
-						//접속한 유저가 아닐 경우
-						disconnClient = (String) userList.get(i);
-						chatdao.insertDiconnClient(msgID, disconnClient);
-	//					e.printStackTrace();ㄴ
+		try{
+			MessageVO messageVO = gson.fromJson(msg, MessageVO.class);
+			ChattingRoomVO roomVO = messageVO.getRoomVO();
+			String roomID = roomVO.getChattingRoomID();
+			try{		
+				// 1.보내기 전에 데이터 베이스에 메세지 정보를 넣는다!!! 메세지 아이디값 반환
+				// 2.메세지에 해당 메세지 아이디를 넣고 다시 제이슨으로 조립후 변수에 담음. 
+				// 3.메시지 ID가 있을 경우는 반송된 메시지, 없을 경우는 새 메시지.
+				String msgID = chatdao.insertMessageToDB(messageVO);
+				messageVO.setMessageID(msgID);
+				msg = gson.toJson(messageVO);
+				ArrayList userList = null;
+				if(roomVO!=null){
+					userList = (ArrayList) roomVO.getChattingRoomUserIDs();
+		//			System.out.println("서버 받은 ArrayList : " + userList.size());
+				}
+				if(userList.size()>0){
+					for (int i = 0; i < userList.size(); i++) {
+		//				System.out.println("받은 방 유저 리스트 : " + userList.get(i));
+						try{
+							htThreadList.get(userList.get(i)).sendToClient(msg);
+						}catch (NullPointerException e){
+							System.out.println("NullPointerException");
+							//접속한 유저가 아닐 경우
+							disconnClient = (String) userList.get(i);
+							chatdao.insertDiconnClient(msgID, disconnClient);
+		//					e.printStackTrace();
+						}
 					}
 				}
+			}catch (SocketException e){
+				System.out.println("SocketException");
+				e.printStackTrace();
+			} catch (IOException e) {
+				System.out.println("IOException");
+				e.printStackTrace();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} 
+			
+		}catch(Exception e){
+			System.out.println("이미지 파일이 전송되었습니다!!! ");
+			FileVO img = gson.fromJson(msg, FileVO.class);
+			// 클라이언트, 서버가 같은 곳에 설치되어 있다고 가정하였을때... (만약 클라이언트에서 이미지를 보여준다면 pathName지정은 클라이언트에서 .
+			//일단은 단순 프로필 이미지 이기 때문에 경로네임 지정은 필요가 없다. 
+			String imagesDirPath= System.getProperty("user.dir");// 현재 프로젝트의 경로를 알려준다. 
+			try {
+				htThreadList.get(img.toString()).sendToClient(msg);
+				System.out.println("변경요청한  클라이언트에게 이미지 전송~~~");
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
-		}catch (SocketException e){
-			System.out.println("SocketException");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println("IOException");
-			e.printStackTrace();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} 
+			
+		}
+		
+		
 	}
 	
 	//쓰레드 목록에서 특정 쓰레드 삭제하기

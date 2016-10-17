@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -102,8 +103,8 @@ public class CreatingChattingRoomPanel extends JFrame {
 		// 크기 설정하려면 서치패널에 있는 크기를 필수적으로 줄여주어야 한다....
 		selectedList = new JList<>(listmodel);
 		selectedList.setCellRenderer(new FriendsListCellRenderer());
-		ChoiceFriendListScrollPanel = new CustomJScrollPane(selectedList, CustomJScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				CustomJScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		ChoiceFriendListScrollPanel = new CustomJScrollPane(selectedList);
+		ChoiceFriendListScrollPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		ChoiceFriendListScrollPanel.setBorder(null);
 		ChoiceFriendListScrollPanel.setPreferredSize(new Dimension(220, 200));
 		middlePanel.add(ChoiceFriendListScrollPanel);

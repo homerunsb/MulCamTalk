@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
 import com.mc.mctalk.chatserver.ChattingClient;
+import com.mc.mctalk.vo.FileVO;
 
 /*
  * 담당자 : 정대용
@@ -44,25 +45,54 @@ private JPanel mainPanel = new JPanel();
 	
 	private EtchedBorder eBorder = new EtchedBorder(EtchedBorder.RAISED);
 	
-
+	public SettingPanel(){
+		//계정 패널(서브패널)
+				accountPanel.add(accountLabel, BorderLayout.CENTER);
+				accountPanel.add(logoutBtn);
+				logoutBtn.setPreferredSize(new Dimension(100, 50));
+				accountPanel.setBorder(eBorder);
+				mainPanel.add(accountPanel);
+				 
+				//프로필 패널(서브패널)
+				profilePanel.add(profileLabel);
+				profileInPanel.add(nameChangeBtn);
+				profileInPanel.add(messageChangeBtn);
+				profilePanel.add(profileInPanel);
+				profilePanel.setBorder(eBorder);
+				mainPanel.add(profilePanel);
+				
+				//알림패널(서브패널)
+				alramPanel.add(alramLabel);
+				alramInPanel.add(alramOnBtn);
+				alramInPanel.add(alramOffBtn);
+				alramPanel.add(alramInPanel);
+				alramPanel.setBorder(eBorder);
+				mainPanel.add(alramPanel);
+				
+				add(mainPanel);
+				
+				//패널크기 설정
+				mainPanel.setPreferredSize(new Dimension(380, 550));
+				accountPanel.setPreferredSize(new Dimension(360, 100));
+				profilePanel.setPreferredSize(new Dimension(360, 100));
+				alramPanel.setPreferredSize(new Dimension(360, 100));
+				
+				//패널 레이아웃 세팅
+				accountPanel.setLayout(new GridLayout(1, 2, 5, 5));
+				profilePanel.setLayout(new GridLayout(1, 2, 5, 5));
+				profileInPanel.setLayout(new GridLayout(2, 1, 5, 5));
+				alramPanel.setLayout(new GridLayout(1, 2, 5, 5));
+				alramInPanel.setLayout(new GridLayout(2, 1, 5, 5));
+//				mainPanel.setLayout(new GridLayout(3, 1));
+				
+				setSize(380,550);
+				setVisible(true);
+	}
+	
 	
 	public SettingPanel(ChattingClient client)
 	{		
-		
-		this.client = client;
-		//
-		
-		//계정 패널(서브패널)
-		accountPanel.add(accountLabel, BorderLayout.CENTER);
-		accountPanel.add(logoutBtn);
-		logoutBtn.setPreferredSize(new Dimension(100, 50));
-		accountPanel.setBorder(eBorder);
-		mainPanel.add(accountPanel);
-		 
-		//프로필 패널(서브패널)
-		profilePanel.add(profileLabel);
-		profileInPanel.add(nameChangeBtn);
-		profileInPanel.add(messageChangeBtn);
+		this();
 		messageChangeBtn.addActionListener(new ActionListener() {
 			
 			@Override
@@ -71,12 +101,14 @@ private JPanel mainPanel = new JPanel();
 				if(e.getSource()==messageChangeBtn){
 					int returnVal = fileChooser.showOpenDialog(mainPanel);
 					if(returnVal== fileChooser.APPROVE_OPTION){
-						String imagesDirPath= System.getProperty("user.dir"+"/images");
-						File selectImgFile =fileChooser.getSelectedFile();
+						String imagesDirPath= System.getProperty("user.dir");
 						
+						FileVO selectImgFile =new FileVO(fileChooser.getSelectedFile().getPath(), client.getLoginUserVO().getUserID()); 
+						client.sendImg(selectImgFile);
 						
 						System.out.println(fileChooser.getSelectedFile().getPath());
-						System.out.println(imagesDirPath);
+						System.out.println(selectImgFile.exists());
+						System.out.println(imagesDirPath+"/images");
 						
 					}else{
 						
@@ -84,35 +116,6 @@ private JPanel mainPanel = new JPanel();
 				}
 			}
 		});
-		profilePanel.add(profileInPanel);
-		profilePanel.setBorder(eBorder);
-		mainPanel.add(profilePanel);
 		
-		//알림패널(서브패널)
-		alramPanel.add(alramLabel);
-		alramInPanel.add(alramOnBtn);
-		alramInPanel.add(alramOffBtn);
-		alramPanel.add(alramInPanel);
-		alramPanel.setBorder(eBorder);
-		mainPanel.add(alramPanel);
-		
-		add(mainPanel);
-		
-		//패널크기 설정
-		mainPanel.setPreferredSize(new Dimension(380, 550));
-		accountPanel.setPreferredSize(new Dimension(360, 100));
-		profilePanel.setPreferredSize(new Dimension(360, 100));
-		alramPanel.setPreferredSize(new Dimension(360, 100));
-		
-		//패널 레이아웃 세팅
-		accountPanel.setLayout(new GridLayout(1, 2, 5, 5));
-		profilePanel.setLayout(new GridLayout(1, 2, 5, 5));
-		profileInPanel.setLayout(new GridLayout(2, 1, 5, 5));
-		alramPanel.setLayout(new GridLayout(1, 2, 5, 5));
-		alramInPanel.setLayout(new GridLayout(2, 1, 5, 5));
-//		mainPanel.setLayout(new GridLayout(3, 1));
-		
-		setSize(380,550);
-		setVisible(true);
 	}
 }

@@ -2,25 +2,14 @@ package com.mc.mctalk.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.view.uiitem.CustomTitlebar;
@@ -55,7 +44,7 @@ public class MainFrame extends JFrame {
 		pMainMenu = new MainMenuPanel(this, client);
 		pFriendsList = new FriendsListPanel(client);
 		pChattingList = new JPanel();
-		pSetting = new SettingPanel();
+		pSetting = new SettingPanel(client);
 		
 		//* panel setting
 		pCover.setLayout(new BoxLayout(pCover, BoxLayout.Y_AXIS));
