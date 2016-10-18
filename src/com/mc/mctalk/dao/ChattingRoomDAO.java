@@ -64,7 +64,7 @@ public class ChattingRoomDAO {
 														 + "LEFT JOIN (select cru.room_id, (select user_pf_img_path from users where user_id = cru.user_id) path "
 														 + "				from chat_room_users cru "
 														 + "				where cru_left_time is null "
-														 + "				and room_id in (select room_id from chat_room_users where user_id = 'test') "
+														 + "				and room_id in (select room_id from chat_room_users where user_id = ?) "
 														 + "				and user_id != 'test' "
 														 + "				group by room_id "
 														 + "				having count(user_id) = 1) path "
@@ -233,6 +233,7 @@ public class ChattingRoomDAO {
 			conn = JDBCUtil.getConnection();
 			stmt = conn.prepareStatement(searchChatRoomListSQL);
 			stmt.setString(1, loginID);
+			stmt.setString(2, loginID);
 			rst = stmt.executeQuery();
 			
 			while(rst.next()){

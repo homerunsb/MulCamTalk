@@ -167,7 +167,7 @@ public class ChattingRoomListPanel extends JPanel {
 	class FriendsListCellRenderer extends JPanel implements ListCellRenderer<ChattingRoomVO> {
 		private JLabel lbImgIcon = new JLabel();
 		private JLabel lbName = new JLabel();
-		private JLabel lbStatMsg = new JLabel();
+		private JLabel lbStatMsg;
 		private JPanel panelText;
 		
 		public FriendsListCellRenderer() {
@@ -175,6 +175,8 @@ public class ChattingRoomListPanel extends JPanel {
 			Border margin = new EmptyBorder(5, 15, 5, 10);
 			this.setLayout(new BorderLayout(10, 10)); //간격 조정이 되버림(확인필요)
 			this.setBorder(new CompoundBorder(border, margin));
+			
+			lbStatMsg = new JLabel();
 			
 			lbName.setFont(new Font("Malgun Gothic", Font.BOLD, 13));
 			lbStatMsg.setFont(new Font("Malgun Gothic", Font.PLAIN, 10));
@@ -192,9 +194,11 @@ public class ChattingRoomListPanel extends JPanel {
 		@Override
 		public Component getListCellRendererComponent(JList<? extends ChattingRoomVO> list, ChattingRoomVO value, int index,
 				boolean isSelected, boolean cellHasFocus) {
+			
+			System.out.println(list.toString());
+			
 			//받아온 JList의 값을 UserVO 객체에 담기
 			ChattingRoomVO vo = (ChattingRoomVO) value;
-			
 			//리턴할 객체에 둥근 프로필 이미지, 이름과, 상태 메세지 세팅
 			String imgPath = null; 
 			if(vo.getUserCount() > 2){
@@ -205,7 +209,10 @@ public class ChattingRoomListPanel extends JPanel {
 			
 			ImageIcon profileImage = imageMaker.getRoundedImage(imgPath, 70, 70);
 			lbImgIcon.setIcon(profileImage);
-			lbName.setText(vo.getChattingRoomName());
+			
+			if(vo.getChattingRoomName() != null){
+				lbName.setText(vo.getChattingRoomName());
+			}
 			if(vo.getLastMsgContent() != null ){
 				lbStatMsg.setText(vo.getLastMsgContent());
 			}
