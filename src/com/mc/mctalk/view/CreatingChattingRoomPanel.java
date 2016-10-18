@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
@@ -108,6 +109,27 @@ public class CreatingChattingRoomPanel extends JFrame {
 		ChoiceFriendListScrollPanel.setBorder(null);
 		ChoiceFriendListScrollPanel.setPreferredSize(new Dimension(220, 200));
 		middlePanel.add(ChoiceFriendListScrollPanel);
+		selectedList.addMouseListener(new MouseListener() {
+			public void mouseReleased(MouseEvent e) {
+			}
+			public void mousePressed(MouseEvent e) {
+			}
+			public void mouseExited(MouseEvent e) {
+			}
+			public void mouseEntered(MouseEvent e) {
+			}
+			public void mouseClicked(MouseEvent e) {
+			friendListPannel.getSelectedFriends().remove(selectedList.getSelectedValue().getUserID());
+			System.out.println(friendListPannel.getSelectedFriends().size());
+				friendListPannel.setSelectedFriends(friendListPannel.getSelectedFriends());
+				
+//				MouseListener[] a= friendListPannel.getJlFriendsList().getMouseListeners();
+//				a[0].mouseClicked(e);
+//				listmodel.remove(selectedList.getSelectedIndex());
+				validate();
+				repaint();
+			}
+		});
 		friendListPannel.getpSearch().getpSearchOuter().setBackground(backGraundColor);
 		friendListPannel.getJlFriendsList().addMouseListener(new MouseListener() {
 			public void mouseReleased(MouseEvent e) {
@@ -129,7 +151,6 @@ public class CreatingChattingRoomPanel extends JFrame {
 
 					listmodel.addElement(entry.next().getValue());
 				}
-				System.out.println(listmodel.size());
 				count = friendListPannel.getSelectedFriends().size();
 				topCountLabel.setText(count + "");
 				repaint();
