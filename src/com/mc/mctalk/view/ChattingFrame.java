@@ -11,9 +11,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,8 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.SimpleAttributeSet;
@@ -40,6 +35,7 @@ import javax.swing.text.StyledDocument;
 import com.google.gson.Gson;
 import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.view.uiitem.CustomJScrollPane;
+import com.mc.mctalk.view.uiitem.NotificationAlarmPlayer;
 import com.mc.mctalk.vo.ChattingRoomVO;
 import com.mc.mctalk.vo.MessageVO;
 import com.mc.mctalk.vo.UserVO;
@@ -288,9 +284,24 @@ public class ChattingFrame extends JFrame {
 		}
 		
 		try {
-			if(isLoginID != true){
+			if(isLoginID != true){//상대방 메시지일 경우
+				//상대방 이름 추가 표시
 				doc.insertString(doc.getLength(), sendUserName+"\n", sasSendUser); // 상대방 아이디 넣기
 				doc.setParagraphAttributes((doc.getLength() - sendUserName.length()), doc.getLength(), sasSendUser, false); // 서식 지정하기
+				
+				//메시지 알람 재생
+				Thread alarmThread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						NotificationAlarmPlayer ap = new NotificationAlarmPlayer();
+				        try {
+				        	ap.playAudioFile();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}	
+					}
+				});
+				alarmThread.start();
 			}
 			doc.insertString(doc.getLength(), insertedMsg, leftOrRight); // 메시지 넣기
 			doc.insertString(doc.getLength() - minusLength, formattedTime, sasTime); // 시간 넣기
@@ -298,7 +309,7 @@ public class ChattingFrame extends JFrame {
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
-
+		
 		taChatInPut.setText(""); // 채팅입력창 초기화
 		
 		//추가할 사항
