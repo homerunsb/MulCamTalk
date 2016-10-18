@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.mc.mctalk.chatserver.ChattingClient;
 import com.mc.mctalk.vo.ChattingRoomVO;
 import com.mc.mctalk.vo.MessageVO;
 import com.mc.mctalk.vo.UserVO;
@@ -41,12 +42,12 @@ public class ChattingRoomDAO {
 	private String addUserToChattingRoomSQL = "insert into chat_room_users "
 																+ "(room_id, user_id, cru_entered_time) "
 																+ "values(?, ?, now())";
-	private String searchChatRoomUsersSQL = "select * "
+	private String searchChatRoomUsersSQL = "select user_id "
 															 + "from users " 
 															 + "where user_id in (select user_id " 
 															 + "from chat_room_users "
 															 + "where room_id = ?) ";	 
-	private String searchChatRoomInfoSQL = "select * from chat_rooms where room_id = ? ";	 			
+	private String searchChatRoomInfoSQL = "select room_id, room_name from chat_rooms where room_id = ? ";	 			
 	private String insertMessageToDBSQL = "INSERT INTO messages (room_id,msg_sent_user_id,"
 			+ "msg_content,msg_sent_time) values (? ,? ,? ,?)";
 	private String insertDisconnClientSQL = "INSERT INTO disconn_client (msg_id,disconn_client_id) "
@@ -156,10 +157,10 @@ public class ChattingRoomDAO {
 	}
 	
 	// 채팅방 만들기
-	public String makeChattingRoom(String loginID, LinkedHashMap<String, UserVO> lastSelected, boolean is1on1){
+	public String makeChattingRoom(ChattingClient client, LinkedHashMap<String, UserVO> lastSelected, boolean is1on1){
 		System.out.println(TAG + "makeChattingRoom()");
 		String roomID = null;
-		String friendNames = "나";
+		String friendNames = client.getLoginUserVO().getUserName();
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rst = null;
@@ -170,11 +171,8 @@ public class ChattingRoomDAO {
 			for(int i =0 ; i<lastSelected.size(); i++){
 				friendNames += "/"+ entry.next().getValue().getUserName();
 			}
-			if(is1on1){
-				stmt.setString(1, friendNames.split("/")[1]);
-			}else{
-				stmt.setString(1, friendNames);// 방이름이 될 것이다. 
-			}
+			
+			stmt.setString(1, friendNames);// 방이름이 될 것이다. 
 			int cnt = stmt.executeUpdate();
 
 			if(cnt > 0){
@@ -204,8 +202,8 @@ public class ChattingRoomDAO {
 		try{
 			conn = JDBCUtil.getConnection();
 			stmt = conn.prepareStatement(addUserToChattingRoomSQL);
-			stmt.setString(1, roomID); //roomid
-			stmt.setString(2, userID); //user
+			stmt.setString(1, roomID);
+			stmt.setString(2, userID);
 
 			int cnt = stmt.executeUpdate();
 			if(cnt > 0){
@@ -220,7 +218,6 @@ public class ChattingRoomDAO {
 		}
 		return isSuceed;
 	}
-	
 	
 	//로그인한 유저의 방목록 리스트
 	public Map<String, ChattingRoomVO> getAllChatRoomVOMap(String loginID){
@@ -247,6 +244,7 @@ public class ChattingRoomDAO {
 				roomVO.setLasMsgSendTime(rst.getString(5));
 				roomVO.setUnReadMsgCount(rst.getInt(6));
 				roomVO.setImgPath(rst.getString(7));
+				roomVO.setChattingRoomUserIDs(getChattingRoomUserList(rst.getString(1)));
 				roomVOMap.put(roomVO.getChattingRoomID(), roomVO);
 			}
 		}catch(SQLException e){
@@ -257,19 +255,44 @@ public class ChattingRoomDAO {
 		return roomVOMap;
 	}
 	
-	//채팅 참여자 유저 정보를 받아서 최종적으로 RoomVO를 만들어 리턴
-	//방이름 만들어주는 공통으로 쓸 수 있는 메소드 필요(1:1은 상대방 이름, 여러명은 구분값으로 전부 나열)
+	//채팅 방 한개에 대한 정보 검색하기(채팅창 오픈용)
 	public ChattingRoomVO getChatRoomVO(String roomID){
 		System.out.println(TAG + "getChatRoomVO()");
-		System.out.println("방ID : " + roomID);
 		
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rst = null;
 		ChattingRoomVO roomVO = new ChattingRoomVO(); 
-		ArrayList<String> listChattingUserIDs = new ArrayList<>();
-		String roomName = "";
 		
+		try{
+			conn = JDBCUtil.getConnection();
+			stmt = conn.prepareStatement(searchChatRoomInfoSQL);
+			stmt.setString(1, roomID);
+			rst = stmt.executeQuery();
+
+			if (rst.next()) {
+				roomVO.setChattingRoomID(roomID);
+				roomVO.setChattingRoomName(rst.getString(2));
+				roomVO.setChattingRoomUserIDs(getChattingRoomUserList(roomID));
+			}
+			
+		}catch(SQLException e){
+			System.out.println("addUserToChattingRoom e : " + e);
+		}finally {
+			JDBCUtil.close(rst,stmt, conn);
+		}
+		return roomVO;
+	}
+	
+	//방에 참여한 유저 정보 검색하기
+	public ArrayList<String> getChattingRoomUserList(String roomID){
+//		System.out.println(TAG + "getUserListChattingRoom()");
+		
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rst = null;
+		ArrayList<String> listChattingUserIDs = new ArrayList<>();
+
 		try{
 			conn = JDBCUtil.getConnection();
 			stmt = conn.prepareStatement(searchChatRoomUsersSQL);
@@ -277,49 +300,18 @@ public class ChattingRoomDAO {
 			rst = stmt.executeQuery();
 			
 			while(rst.next()){
-				UserVO UserVO = new UserVO();
-				UserVO.setUserID(rst.getString(1));
-//				UserVO.setUserPassword(rst.getString(2));
-				UserVO.setUserName(rst.getString(3));
-//				UserVO.setUserSex(rst.getInt(4));
-//				UserVO.setUserBirth(rst.getString(5));
-//				UserVO.setUserMail(rst.getString(6));
-//				UserVO.setUserPhone(rst.getString(7));
-//				UserVO.setUserAddress(rst.getString(8));
-//				UserVO.setUserJoinDate(rst.getString(9));
-//				UserVO.setUserImgPath(rst.getString(10));
-				listChattingUserIDs.add(UserVO.getUserID());
-//				roomName += UserVO.getUserName() + "/";
+				listChattingUserIDs.add(rst.getString(1));
 			}
-			
-//			if(roomName.substring(roomName.length()-1, roomName.length()).equals("/")){
-//				roomName = roomName.substring(0, roomName.length()-1);
-////				System.out.println("방이름 : " + roomName);
-//			}
-			roomVO.setChattingRoomID(roomID);
-			roomVO.setChattingRoomUserIDs(listChattingUserIDs);
-			
-			stmt = conn.prepareStatement(searchChatRoomInfoSQL);
-			stmt.setString(1, roomID);
-			rst = stmt.executeQuery();
-			
-			while(rst.next()){
-				roomVO.setChattingRoomName(rst.getString("room_name"));
-			}
-			
-			System.out.println("====방 정보====");
-			System.out.println(roomVO.getChattingRoomID());
-			System.out.println(roomVO.getChattingRoomName());
-			System.out.println(roomVO.getChattingRoomUserIDs());
-			System.out.println("====끝====");
 		}catch(SQLException e){
-			System.out.println("addUserToChattingRoom e : " + e);
+			System.out.println("getAllChatRoomVOMap e : " + e);
 		}finally {
 			JDBCUtil.close(rst,stmt, conn);
 		}
-		
-		return roomVO;
+		return listChattingUserIDs;
 	}
+	
+	
+
 	
 	
 }
