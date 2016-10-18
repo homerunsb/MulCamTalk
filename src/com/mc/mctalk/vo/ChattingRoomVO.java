@@ -9,6 +9,7 @@ public class ChattingRoomVO {
 	private String lastMsgContent = null, lasMsgSendTime = null;
 	private int unReadMsgCount = 0;
 	private List<String> chattingRoomUserIDs =  new ArrayList<String>();
+	private String imgPath = null;
 	
 	public String getChattingRoomID() {
 		return chattingRoomID;
@@ -52,11 +53,17 @@ public class ChattingRoomVO {
 	public void setUnReadMsgCount(int unReadMsgCount) {
 		this.unReadMsgCount = unReadMsgCount;
 	}
+	public String getImgPath() {
+		return imgPath;
+	}
+	public void setImgPath(String imgPath) {
+		this.imgPath = imgPath;
+	}
 	@Override
 	public String toString() {
 		return "ChattingRoomVO [chattingRoomID=" + chattingRoomID + ", chattingRoomName=" + chattingRoomName
 				+ ", userCount=" + userCount + ", lastMsgContent=" + lastMsgContent + ", lasMsgSendTime="
 				+ lasMsgSendTime + ", unReadMsgCount=" + unReadMsgCount + ", chattingRoomUserIDs=" + chattingRoomUserIDs
-				+ "]";
+				+ ", imgPath=" + imgPath + "]";
 	}
 }

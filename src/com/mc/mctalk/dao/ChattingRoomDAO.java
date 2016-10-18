@@ -51,15 +51,26 @@ public class ChattingRoomDAO {
 			+ "msg_content,msg_sent_time) values (? ,? ,? ,?)";
 	private String insertDisconnClientSQL = "INSERT INTO disconn_client (msg_id,disconn_client_id) "
 			+ "values (?,?)"; 
-	private String searchChatRoomListSQL =  "SELECT cr.room_id, cr.room_name, cru.user_cnt, ms.msg_content last_msg_content, ms.msg_sent_time last_msg_sent_time, dc.unread_msg_cnt "
-														  + "FROM chat_rooms cr, "
-														  + "	  (select room_id, count(user_id) user_cnt from chat_room_users where cru_left_time is null "
-														  + "		and room_id in (select room_id from chat_room_users where user_id = ?) group by room_id) cru, "
-														  + "	  (select msg_id, room_id, msg_content, msg_sent_time from messages group by room_id order by msg_sent_time desc) ms, "
-														  + "	  (select ms.room_id, count(ms.msg_id) unread_msg_cnt from disconn_client dc, messages ms	where dc.msg_id = ms.msg_id group by ms.room_id) dc "
-														  + "WHERE cr.room_id = cru.room_id "
-														  + "AND	cr.room_id = ms.room_id "
-														  + "AND	cr.room_id = dc.room_id ";
+	private String searchChatRoomListSQL =  "SELECT cr.room_id, cr.room_name, cru.user_cnt, ms.msg_content last_msg_content, ms.msg_sent_time last_msg_sent_time, dc.unread_msg_cnt, path.path "
+													 	 + "FROM chat_rooms cr "
+														 + "LEFT JOIN (select room_id, count(user_id) user_cnt from chat_room_users where cru_left_time is null "
+														 + "				  and room_id in (select room_id from chat_room_users where user_id = ?) group by room_id) cru "
+														 + "		ON	cr.room_id = cru.room_id "
+														 + "LEFT JOIN (select msg_id, room_id, msg_content, msg_sent_time from messages group by room_id order by msg_sent_time desc) ms "
+														 + "		ON	cr.room_id = ms.room_id "
+														 + "LEFT JOIN (select ms.room_id, count(ms.msg_id) unread_msg_cnt from disconn_client dc, messages ms	where dc.msg_id = ms.msg_id group by ms.room_id) dc "
+														 + "		ON cr.room_id = dc.room_id "
+														 + "LEFT JOIN (select cru.room_id, (select user_pf_img_path from users where user_id = cru.user_id) path "
+														 + "				from chat_room_users cru "
+														 + "				where cru_left_time is null "
+														 + "				and room_id in (select room_id from chat_room_users where user_id = 'test') "
+														 + "				and user_id != 'test' "
+														 + "				group by room_id "
+														 + "				having count(user_id) = 1) path "
+														 + "		ON cr.room_id = path.room_id "
+														 + "WHERE cru.user_cnt is not null "
+														 + "GROUP BY cr.room_id "
+														 + "ORDER BY ms.msg_sent_time desc, cr.room_id desc ";
 	
 	//접속하지 않은 유저에게 메시지 전송시 관련 정보 입력
 	public void insertDiconnClient(String msg_id, String disconnClient){
@@ -235,16 +246,14 @@ public class ChattingRoomDAO {
 				roomVO.setLastMsgContent(rst.getString(4));
 				roomVO.setLasMsgSendTime(rst.getString(5));
 				roomVO.setUnReadMsgCount(rst.getInt(6));
+				roomVO.setImgPath(rst.getString(7));
 				roomVOMap.put(roomVO.getChattingRoomID(), roomVO);
 			}
-
-			System.out.println("새로만든 룸VO 끌어오기 확인 : " + roomVOMap.size());
 		}catch(SQLException e){
 			System.out.println("getAllChatRoomVOMap e : " + e);
 		}finally {
 			JDBCUtil.close(rst,stmt, conn);
 		}
-		
 		return roomVOMap;
 	}
 	

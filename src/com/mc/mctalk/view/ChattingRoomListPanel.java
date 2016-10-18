@@ -200,10 +200,18 @@ public class ChattingRoomListPanel extends JPanel {
 			ChattingRoomVO vo = (ChattingRoomVO) value;
 			
 			//리턴할 객체에 둥근 프로필 이미지, 이름과, 상태 메세지 세팅
-//			ImageIcon profileImage = imageMaker.getRoundedImage(vo.getUserImgPath(), 70, 70);
-//			lbImgIcon.setIcon(profileImage);
+			String imgPath = null; 
+			if(vo.getUserCount() > 2){
+				imgPath = "images/icon_chat_group.png"; 
+			}else if(vo.getUserCount() == 2 && vo.getImgPath() != null){
+				imgPath = vo.getImgPath();
+			}
+			
+			ImageIcon profileImage = imageMaker.getRoundedImage(imgPath, 70, 70);
+			lbImgIcon.setIcon(profileImage);
 			lbName.setText(vo.getChattingRoomName());
 			if(vo.getLastMsgContent() != null ){
+				System.out.println(vo.getLastMsgContent());
 				lbStatMsg.setText(vo.getLastMsgContent());
 			}
 			
