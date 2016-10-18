@@ -167,7 +167,13 @@ public class CreatingChattingRoomPanel extends JFrame {
 
 				Thread chatCreat = new Thread(new Runnable() {
 					public void run() {
-						ChattingController makeRoom = new ChattingController(client, lastSelected);// 다중
+						if(lastSelected.size()==1){
+							Iterator<Entry<String, UserVO>> entry = friendListPannel.getSelectedFriends().entrySet().iterator();
+							ChattingController make1on1Romm = new ChattingController(client, entry.next().getValue());
+						}else{
+							ChattingController makeRoom = new ChattingController(client, lastSelected);// 다중
+							
+						}
 																									// 채팅컨트롤러손봐야
 																									// 함.
 					}
