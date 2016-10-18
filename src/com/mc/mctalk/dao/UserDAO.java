@@ -29,7 +29,7 @@ public class UserDAO {
 			+"and user_id != ? "
 			+"and user_name like ? ";
 	private String memberAddSQL = "INSERT into user_relation (user_id,rel_user_id) "
-			+ "values(?,?)";
+			+ "values(?,?) ";
 	
 	
 	// 회원가입
@@ -148,40 +148,32 @@ public class UserDAO {
 	}
 	
 	//친구추가
-	public Map<String, UserVO> AddFriend(String addId, String loginId) {
+	public int AddFriend(String loginId, String addId) {
 		System.out.println(TAG + "AddFriend()");
 		String id_result = null;
 		Map<String, UserVO> addMap = new LinkedHashMap<String, UserVO>();
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
-		ResultSet rst = null;
+//		ResultSet rst = null;
 		UserVO vo = null;
+		int rst = 0;
 
 		try {
 			conn = JDBCUtil.getConnection();
 			stmt = conn.prepareStatement(memberAddSQL); // SQL 미리 컴파일,인수값 공간
 															// 사전 확보
-			stmt.setString(1, addId); //등록할 ID
-			stmt.setString(2, loginId); //추가할 친구 ID(FriendsAddFrame의 listModel에서 rel_user_id만 따서 매개변수로 사용
-			rst = stmt.executeQuery(); // 쿼리 Execute
+			stmt.setString(1, loginId); //등록할 ID
+			stmt.setString(2, addId); //추가할 친구 ID(FriendsAddFrame의 listModel에서 rel_user_id만 따서 매개변수로 사용
+			rst = stmt.executeUpdate(); // 쿼리 Execute
 
-			while (rst.next()) { // 결과 집합에서 다음 레코드로 이동
-				vo = new UserVO();
-				vo.setUserID(rst.getString("user_id"));
-				addMap.put(vo.getUserID(), vo);
-				System.out.println(addMap.toString());
-			}
+			System.out.println(rst);
 		} catch (SQLException e) {
 			System.out.println("login e : " + e);
-		} catch (NullPointerException e)
-		{
-			System.out.println("null e : " + e);
+		} finally {
+			JDBCUtil.close(stmt, conn);
 		}
-			finally {
-			JDBCUtil.close(rst, stmt, conn);
-		}
-		return addMap;
+		return rst;
 	} 
 	
 	//친구 목록 불러오기

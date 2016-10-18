@@ -65,8 +65,52 @@ public class FriendsAddFrame extends JFrame {
 	
 	private Map<String, UserVO> mapFriends;
 	private RoundedImageMaker imageMaker = new RoundedImageMaker();
+	private ChattingClient client;
 	
 	public FriendsAddFrame(){
+		initPanel();
+		
+		//상단 패널
+		firstPanel.add(addLabel);
+		firstPanel.add(nameField);
+		firstPanel.add(searchBtn);
+		nameField.setPreferredSize(new Dimension(270, 30));
+		searchBtn.addActionListener(new MemberSearchListener());
+		searchBtn.setPreferredSize(new Dimension(270, 30));
+		firstPanel.setPreferredSize(new Dimension(300, 100));
+		add(firstPanel, BorderLayout.NORTH);
+		
+		//가운데 패널에 넣을 검색 리스트, 스크롤 세팅
+		listScroll.setViewportView(searchList);
+		listScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		searchList.setCellRenderer(new FriendsListCellRenderer());
+		searchList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//		searchList.setListData(searchUser);
+		
+		//가운데 패널
+		secondPanel.add(listScroll);
+//		secondPanel.setPreferredSize(new Dimension(300, 200));
+		listScroll.setViewportView(searchList);
+		listScroll.setPreferredSize(new Dimension(270, 150));
+		searchList.setPreferredSize(new Dimension(250, 150));
+		add(secondPanel, BorderLayout.CENTER);
+		
+		//하단 패널
+		thirdPanel.add(addBtn);
+		addBtn.setPreferredSize(new Dimension(270, 30));
+		addBtn.addActionListener(new MemberAddListener());
+		add(thirdPanel, BorderLayout.SOUTH);
+		
+		this.setTitle("친구 추가");
+		this.setSize(300, 360);
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		this.setResizable(false);
+		this.setVisible(true);
+	}
+	
+	public FriendsAddFrame(ChattingClient client)
+	{
+		this.client = client;
 		initPanel();
 		
 		//상단 패널
@@ -184,19 +228,13 @@ public class FriendsAddFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 
-			//로그인하자마자 로그인 ID 변수 소멸
-			//MemberAddListener도 마찬가지
 			UserDAO udo = new UserDAO();
 			UserVO vo = new UserVO();
-			ChattingClient client = new ChattingClient(vo);
 			mapFriends = new LinkedHashMap<String, UserVO>();
 			mapFriends = udo.SearchMember(client.getLoginUserVO().getUserID(), nameField.getText().toString());
 			searchFriendsMap();
 			addElementToJList();
 			System.out.println(listModel);
-			String s = vo.getUserID();
-			System.out.println();
-			System.out.println(client.getLoginUserVO().getUserID());
 		}
 		
 	}
@@ -208,15 +246,13 @@ public class FriendsAddFrame extends JFrame {
 			// TODO Auto-generated method stub
 			UserDAO udo = new UserDAO();
 			UserVO vo = new UserVO();
-			ChattingClient client = new ChattingClient(vo);
 			String c = (listModel.getElementAt(searchList.getSelectedIndex())).toString();
 			int i = c.indexOf("=");
 			int j = c.indexOf(",");
-			String userId = c.substring(i+1, j);
-			System.out.println();
-			
-			
-//			udo.AddFriend(userId, client.getLoginUserVO().toString());
+			String userId = c.substring(i+1, j);	
+			System.out.println("loginID : " + client.getLoginUserVO().getUserID());
+			System.out.println("addID : " + userId);
+			udo.AddFriend(client.getLoginUserVO().getUserID(), userId);
 		}
 	}
 	
