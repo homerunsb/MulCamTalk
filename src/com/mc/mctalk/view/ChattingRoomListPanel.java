@@ -45,16 +45,13 @@ import com.mc.mctalk.vo.UserVO;
 
 public class ChattingRoomListPanel extends JPanel {
 	//선택된 친구목록 모음 (맵)
-	private Map<String, UserVO> selectedFriends = new LinkedHashMap<>();
-	private Robot clickRobot ;
 	private RoundedImageMaker imageMaker = new RoundedImageMaker();
 	private ChattingClient client;
 	
 	private String loginID;
-	private ArrayList<UserVO> alFriendsList;
 	private Map<String, ChattingRoomVO> roomVOMap;
-
-	private JList jlFriendsList;
+	private Map<String, UserVO> selectedFriends;
+	private JList jlRoomList;
 	private CustomJScrollPane scrollPane;
 	private DefaultListModel listModel;
 	private SearchPanel pSearch;
@@ -76,8 +73,8 @@ public class ChattingRoomListPanel extends JPanel {
 		tfSearch.setPreferredSize(new Dimension(325, 15));
 
 		// JList에 데이터 담기
-		jlFriendsList = new JList(new DefaultListModel());
-		listModel = (DefaultListModel) jlFriendsList.getModel();
+		jlRoomList = new JList(new DefaultListModel());
+		listModel = (DefaultListModel) jlRoomList.getModel();
 		
 		//DB접속 후 친구 목록 가져와 Custom JList Model에 프로필 사진 path, 이름 엘리먼트 추가하기.
 		ChattingRoomDAO dao = new ChattingRoomDAO();
@@ -86,11 +83,11 @@ public class ChattingRoomListPanel extends JPanel {
 		addElementToJList();
 		
 		// JList 모양 변경
-		jlFriendsList.setCellRenderer(new FriendsListCellRenderer());
-		jlFriendsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		jlFriendsList.addMouseListener(new FriendSelectionListener());
+		jlRoomList.setCellRenderer(new FriendsListCellRenderer());
+		jlRoomList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		jlRoomList.addMouseListener(new FriendSelectionListener());
 		
-		scrollPane = new CustomJScrollPane(jlFriendsList);
+		scrollPane = new CustomJScrollPane(jlRoomList);
 		scrollPane.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 0, new Color(230, 230, 230)));
 
 		this.add(pSearch, "North");
@@ -104,7 +101,6 @@ public class ChattingRoomListPanel extends JPanel {
 		Iterator<Map.Entry<String, ChattingRoomVO>> entryIterator = entrySet.iterator();
 		while (entryIterator.hasNext()) {
 			Map.Entry<String, ChattingRoomVO> entry = entryIterator.next();
-			String key = entry.getKey();
 			ChattingRoomVO vo = entry.getValue();
 			listModel.addElement(vo);
 		}
@@ -115,10 +111,10 @@ public class ChattingRoomListPanel extends JPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			//getClickCount가 2 이상이면 더블클릭으로 판단함 && 선택된 인덱스가 -1이면 제대로된 선택이 아님
-			if(e.getClickCount() >= 2 && jlFriendsList.getSelectedIndex() != -1){
+			if(e.getClickCount() >= 2 && jlRoomList.getSelectedIndex() != -1){
 				//선택된 친구ID와 로그인 ID를 매개변수로 컨트롤러 호출
-				UserVO vo = (UserVO)jlFriendsList.getSelectedValue();
-				new ChattingController(client, vo);
+				ChattingRoomVO vo = (ChattingRoomVO)jlRoomList.getSelectedValue();
+//				new ChattingController(client, vo);
 			}
 		}
 		public void mouseReleased(MouseEvent arg0) {}
@@ -211,7 +207,6 @@ public class ChattingRoomListPanel extends JPanel {
 			lbImgIcon.setIcon(profileImage);
 			lbName.setText(vo.getChattingRoomName());
 			if(vo.getLastMsgContent() != null ){
-				System.out.println(vo.getLastMsgContent());
 				lbStatMsg.setText(vo.getLastMsgContent());
 			}
 			
@@ -257,18 +252,11 @@ public class ChattingRoomListPanel extends JPanel {
 	}
 
 	public JList getJlFriendsList() {
-		return jlFriendsList;
+		return jlRoomList;
 	}
 
 	public void setJlFriendsList(JList jlFriendsList) {
-		this.jlFriendsList = jlFriendsList;
+		this.jlRoomList = jlFriendsList;
 	}
 
-	public Map<String, UserVO> getSelectedFriends() {
-		return selectedFriends;
-	}
-
-	public void setSelectedFriends(Map<String, UserVO> selectedFriends) {
-		this.selectedFriends = selectedFriends;
-	}
 }

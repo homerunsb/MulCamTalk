@@ -56,7 +56,7 @@ public class ChattingController {
 
 	//채팅방 만들기
 	public String make1onNChattingRoom(boolean is1on1){
-		String roomID = dao.makeChattingRoom(loginID, selectedFriends, is1on1);
+		String roomID = dao.makeChattingRoom(client, selectedFriends, is1on1);
 		if(roomID!=null){
 			System.out.println(TAG + "make1onNChattingRoom()");
 			dao.addUserToChattingRoom(roomID, loginID);
@@ -82,11 +82,11 @@ public class ChattingController {
 	
 	public void openChattingRoom(String roomID){
 		System.out.println(TAG + "openChattingRoom()");
-		ChattingRoomVO roomVO = dao.getChatRoomVO(roomID);
 		ChattingFrame openedChattingGUI = client.getHtChattingGUI(roomID);
 		
 		//채팅방 오픈 여부에 따른 분기 처리
 		if(openedChattingGUI == null){
+			ChattingRoomVO roomVO = dao.getChatRoomVO(roomID);
 			ChattingFrame cf = new ChattingFrame(client, roomVO);
 		}else{
 			openedChattingGUI.requestFocus();
