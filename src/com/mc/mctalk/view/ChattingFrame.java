@@ -11,9 +11,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,8 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.SimpleAttributeSet;
@@ -290,6 +285,7 @@ public class ChattingFrame extends JFrame {
 		
 		try {
 			if(isLoginID != true){//상대방 메시지일 경우
+				//상대방 이름 추가 표시
 				doc.insertString(doc.getLength(), sendUserName+"\n", sasSendUser); // 상대방 아이디 넣기
 				doc.setParagraphAttributes((doc.getLength() - sendUserName.length()), doc.getLength(), sasSendUser, false); // 서식 지정하기
 				
